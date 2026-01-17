@@ -652,11 +652,11 @@ export default function ImprovedPoiPage() {
   };
 
   const handleValidatePictures = () => {
-    // Keep the AI-generated pictures, just remove the flag
+    // Keep the AI-generated pictures and their flag to show the badge, but mark as validated
     setPhotos(
       photos.map((photo) => ({
         ...photo,
-        isAiGenerated: false,
+        isValidated: photo.isAiGenerated ? true : photo.isValidated,
       }))
     );
     setShowPictureActions(false);
@@ -854,7 +854,7 @@ export default function ImprovedPoiPage() {
     photo,
     index,
   }: {
-    photo: { id: number; url: string; alt: string; isAiGenerated?: boolean };
+    photo: { id: number; url: string; alt: string; isAiGenerated?: boolean; isValidated?: boolean };
     index: number;
   }) => {
     const [{ isDragging }, drag] = useDrag({
@@ -875,15 +875,17 @@ export default function ImprovedPoiPage() {
       },
     });
 
+    const isUnvalidatedAi = photo.isAiGenerated && !photo.isValidated;
+    
     return (
       <div
         ref={(node) => drag(drop(node))}
-        onClick={photo.isAiGenerated ? () => handleAiPhotoClick(photo.id) : undefined}
+        onClick={isUnvalidatedAi ? () => handleAiPhotoClick(photo.id) : undefined}
         className={`relative aspect-square bg-gray-100 rounded overflow-hidden group ${
-          photo.isAiGenerated ? 'cursor-pointer border-2' : 'cursor-move border border-gray-200'
+          isUnvalidatedAi ? 'cursor-pointer border-2' : 'cursor-move border border-gray-200'
         } ${isDragging ? "opacity-50" : ""}`}
         style={
-          photo.isAiGenerated
+          isUnvalidatedAi
             ? {
                 borderImage: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) 1',
                 borderImageSlice: 1,
@@ -896,14 +898,20 @@ export default function ImprovedPoiPage() {
           alt={photo.alt}
           className="w-full h-full object-cover"
         />
+        {photo.isAiGenerated && (
+          <div className="absolute top-1 left-1 flex items-center gap-1 px-2 py-1 rounded text-white text-xs font-semibold" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)' }}>
+            <Sparkles className="w-3 h-3" />
+            AI Generated
+          </div>
+        )}
         <div className="absolute inset-0 group-hover:bg-black/30 transition-all flex items-center justify-center pointer-events-none">
-          {photo.isAiGenerated ? (
+          {isUnvalidatedAi ? (
             <span className="text-white text-xs font-semibold bg-black/60 px-2 py-1 rounded">Click to deselect</span>
           ) : (
             <GripVertical className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
           )}
         </div>
-        {!photo.isAiGenerated && (
+        {!isUnvalidatedAi && (
           <button
             onClick={() => removePhoto(photo.id)}
             className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity"
