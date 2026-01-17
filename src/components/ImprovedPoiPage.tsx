@@ -4,19 +4,12 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import mapImage from "figma:asset/41aba0057f9f7c825a2d93c5e0cc3b84e958b742.png";
 import { HistorySection } from "./HistorySection";
 import { SEOSection } from "./SEOSection";
+import { TopBar } from "./TopBar";
+import { Sidebar } from "./Sidebar";
 import {
-  Search,
-  Plus,
-  Edit,
-  MapPin,
-  MoreVertical,
-  Check,
-  X,
   Clock,
   Type,
   ExternalLink,
-  UserCircle,
-  HelpCircle,
   Maximize2,
   ChevronLeft,
   ChevronRight,
@@ -25,30 +18,7 @@ import {
   ChevronDown,
   ChevronUp,
   Hash,
-  Route,
-  Menu,
   Sparkles,
-  Waves,
-  Baby,
-  Mountain,
-  Landmark,
-  UtensilsCrossed,
-  Trees,
-  Hotel,
-  Tent,
-  ParkingCircle,
-  Train,
-  Droplet,
-  Toilet,
-  Dog,
-  Zap,
-  Flag,
-  CheckSquare,
-  ShoppingBag,
-  Wifi,
-  Wrench,
-  Home,
-  Banknote,
   Copy,
   Pin,
   Pen,
@@ -78,8 +48,36 @@ import {
   Globe,
   Settings,
   Share2,
+  Waves,
+  Baby,
+  Mountain,
+  Landmark,
+  UtensilsCrossed,
+  Trees,
+  Hotel,
+  Tent,
+  ParkingCircle,
+  Train,
+  Droplet,
+  Toilet,
+  Dog,
+  Zap,
+  Flag,
+  CheckSquare,
+  ShoppingBag,
+  Wifi,
+  Wrench,
+  Home,
+  Banknote,
+  MapPin,
+  X,
+  Plus,
+  Edit,
+  Check,
+  Search,
+  MoreVertical,
+  Route,
 } from "lucide-react";
-import svgPaths from "../imports/svg-8l0xqjbg6b";
 import { RichTextEditor } from "./RichTextEditor";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
@@ -233,59 +231,6 @@ const categories = [
   { value: "shelters", label: "Shelters", icon: Home },
   { value: "atms", label: "ATMs", icon: Banknote },
 ];
-
-function Component3DBridge() {
-  return (
-    <div className="relative shrink-0 size-[19px]">
-      <svg
-        className="block size-full"
-        fill="none"
-        preserveAspectRatio="none"
-        viewBox="0 0 19 19"
-      >
-        <g>
-          <path
-            d={svgPaths.p1fef0580}
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-          <path
-            d={svgPaths.p28850300}
-            fill="#ffffff"
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-          <path
-            d={svgPaths.p2dc4db00}
-            fill="#ffffff"
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-          <path
-            d={svgPaths.p21b8db80}
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M2.375 15.8333H4.75"
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 export default function ImprovedPoiPage() {
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
@@ -1117,222 +1062,24 @@ export default function ImprovedPoiPage() {
         `}
       </style>
       <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Enhanced Header */}
-      <header
-        className="border-b border-gray-200 shadow-sm"
-        style={{ backgroundColor: "#C3C3C3" }}
-      >
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() =>
-                setIsSidebarVisible(!isSidebarVisible)
-              }
-              className="p-2 hover:bg-gray-100 rounded transition-colors"
-              title={
-                isSidebarVisible
-                  ? "Hide sidebar"
-                  : "Show sidebar"
-              }
-            >
-              <Menu className="w-5 h-5 text-gray-700" />
-            </button>
-            <div
-              className="rounded p-2 shadow-md"
-              style={{ backgroundColor: "#d4021c" }}
-            >
-              <Component3DBridge />
-            </div>
-            <h1 className="font-['Source_Sans_3:Black',sans-serif] font-black text-gray-800 text-base tracking-wider uppercase">
-              Geo Back Office
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">
-                AI Assitant
-              </span>
-              <button
-                onClick={() => setShowAiButtons(!showAiButtons)}
-                className={`relative w-9 h-5 rounded-full transition-colors ${
-                  showAiButtons
-                    ? "bg-gradient-to-r from-violet-500 to-blue-500"
-                    : "bg-gray-300"
-                }`}
-                title={
-                  showAiButtons
-                    ? "Hide AI buttons"
-                    : "Show AI buttons"
-                }
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-md transition-transform ${
-                    showAiButtons
-                      ? "translate-x-4"
-                      : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-
-            <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors">
-              <Type className="w-4 h-4" />
-              <span className="font-medium">
-                Non Geo Back Office
-              </span>
-              <ExternalLink className="w-4 h-4" />
-            </button>
-
-            <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors">
-              <UserCircle className="w-4 h-4" />
-              <span className="font-medium">Username</span>
-            </button>
-
-            <button className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors">
-              <HelpCircle className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <TopBar
+        isSidebarVisible={isSidebarVisible}
+        showAiButtons={showAiButtons}
+        onToggleSidebar={() => setIsSidebarVisible(!isSidebarVisible)}
+        onToggleAiButtons={() => setShowAiButtons(!showAiButtons)}
+      />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Enhanced Sidebar */}
-        <aside
-          className={`w-80 bg-white border-r border-gray-200 flex flex-col shadow-sm ${isSidebarVisible ? "visible" : "hidden"}`}
-        >
-          {/* Tabs */}
-          <div className="border-b border-gray-200 px-4 pt-4">
-            <div className="flex gap-1 mb-0">
-              <button className="px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 rounded-t transition-colors flex items-center gap-2">
-                <Route className="w-4 h-4" />
-                Routes
-              </button>
-              <button
-                className="px-4 py-2.5 text-sm text-white rounded-t font-semibold shadow-sm flex items-center gap-2"
-                style={{ backgroundColor: "#d4021c" }}
-              >
-                <MapPin className="w-4 h-4" />
-                Places of Interest
-              </button>
-            </div>
-          </div>
-
-          {/* Sidebar Content */}
-          <div className="flex-1 flex flex-col overflow-hidden p-4">
-            <button
-              className="w-full text-white rounded px-4 py-3 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transition-all mb-4 hover:opacity-90"
-              style={{ backgroundColor: "#d4021c" }}
-            >
-              <Plus className="w-5 h-5" />
-              New place of interest
-            </button>
-
-            <div className="relative mb-4">
-              <input
-                type="text"
-                placeholder="Search for a POI"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-100 hover:bg-gray-150 focus:bg-white border border-transparent focus:border-blue-400 rounded-md px-4 py-2.5 pr-10 text-sm outline-none transition-all"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </div>
-
-            {/* POI List */}
-            <div className="flex-1 overflow-y-auto">
-              {filteredPOIs.map((poi, index) => (
-                <div key={poi.id}>
-                  <button
-                    onClick={() => setSelectedPOI(poi.id)}
-                    className={`w-full flex items-center gap-2 p-2.5 rounded-md transition-all border ${
-                      selectedPOI === poi.id
-                        ? "shadow-sm"
-                        : "hover:bg-gray-50 border-transparent"
-                    }`}
-                    style={
-                      selectedPOI === poi.id
-                        ? {
-                            backgroundColor: "#fef2f2",
-                            borderColor: "#fecaca",
-                          }
-                        : {}
-                    }
-                  >
-                    <div
-                      className={`p-1.5 rounded ${
-                        poi.status === "draft" &&
-                        selectedPOI !== poi.id
-                          ? "bg-orange-100"
-                          : poi.status === "published" &&
-                              selectedPOI !== poi.id
-                            ? "bg-green-100"
-                            : ""
-                      }`}
-                      style={
-                        selectedPOI === poi.id &&
-                        poi.status === "draft"
-                          ? { backgroundColor: "#ffedd5" }
-                          : selectedPOI === poi.id &&
-                              poi.status === "published"
-                            ? { backgroundColor: "#dcfce7" }
-                            : {}
-                      }
-                    >
-                      {poi.status === "draft" ? (
-                        <Edit
-                          className={`w-3.5 h-3.5`}
-                          style={{ color: "#f97316" }}
-                        />
-                      ) : (
-                        <Check className="w-3.5 h-3.5 text-green-700" />
-                      )}
-                    </div>
-
-                    <span className="flex-1 text-left text-sm font-medium text-gray-800 truncate">
-                      {poi.name || (
-                        <span className="text-gray-400 italic">
-                          <i>Untitled</i>
-                        </span>
-                      )}
-                    </span>
-
-                    <div className="flex items-center gap-1">
-                      {poi.hasLocation ? (
-                        <MapPin className="w-4 h-4 text-blue-600" />
-                      ) : selectedPOI === poi.id ? (
-                        (() => {
-                          const category = categories.find(
-                            (c) => c.value === selectedCategory
-                          );
-                          if (!category) return null;
-                          const CategoryIcon = category.icon;
-                          return (
-                            <CategoryIcon className="w-4 h-4" style={{ color: "#f97316" }} />
-                          );
-                        })()
-                      ) : (
-                        <X className="w-4 h-4 text-red-500" />
-                      )}
-                      <div 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('More options');
-                        }}
-                        className="p-0.5 hover:bg-gray-200 rounded cursor-pointer"
-                      >
-                        <MoreVertical className="w-4 h-4 text-gray-500" />
-                      </div>
-                    </div>
-                  </button>
-                  {index < filteredPOIs.length - 1 && (
-                    <div className="border-b border-gray-200 my-1" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+        <Sidebar
+          isVisible={isSidebarVisible}
+          pois={filteredPOIs}
+          selectedPOI={selectedPOI}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+          onSelectPOI={setSelectedPOI}
+          onSearchChange={setSearchQuery}
+        />
 
         {/* Enhanced Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
