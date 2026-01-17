@@ -3975,9 +3975,6 @@ export default function ImprovedPoiPage() {
                 </div>
               )}
 
-              {/* History Section */}
-              <HistorySection />
-
               {/* SEO Section */}
               <SEOSection
                 seoMetaTitle={seoMetaTitle}
@@ -4029,6 +4026,9 @@ export default function ImprovedPoiPage() {
                 onValidate={handleValidateSeo}
                 onCancel={handleCancelSeo}
               />
+
+              {/* History Section */}
+              <HistorySection />
             </div>
           </div>
         </main>

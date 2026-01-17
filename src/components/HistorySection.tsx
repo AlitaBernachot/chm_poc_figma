@@ -14,7 +14,7 @@ export function HistorySection() {
   const [isHistoryExpanded, setIsHistoryExpanded] = useState(true);
 
   return (
-    <div className="mt-6 pt-6 border-t border-gray-300">
+    <div className="mt-6 pt-6">
       <div
         id="history-section"
         className="bg-white rounded shadow p-6 border border-gray-200 scroll-mt-6"
