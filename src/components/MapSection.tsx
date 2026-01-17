@@ -7,7 +7,9 @@ interface MapSectionProps {
   // Add all necessary props here based on the parent component
 }
 
-export const MapSection: React.FC<MapSectionProps> = (props) => {
+export const MapSection: React.FC<MapSectionProps> = (
+  props,
+) => {
   return (
     <div className="bg-white rounded shadow border border-gray-200 overflow-hidden relative">
       <div className="h-full min-h-[500px] bg-green-100 relative flex items-center justify-center">
