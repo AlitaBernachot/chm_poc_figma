@@ -40,7 +40,9 @@ export async function fetchPOIClusterIds(
     const data: GeoJSONResponse = await response.json();
     
     // Extract all IDs from features
-    const ids = data.features.map(feature => feature.id);
+    const ids = data.features.slice(0, 200).map(feature => feature.id);
+
+    // ONLY get 200 for testing, otherwise too many requests and app is slow
     
     console.log(`Extracted ${ids.length} POI cluster IDs`);
     return ids;
@@ -62,7 +64,7 @@ export async function fetchPOIDetails(
 ): Promise<unknown> {
   try {
     const idsString = ids.join(',');
-    const url = `https://schweizmobil.ch/api/4/feature/sightseeing/${idsString}?lang=${lang}`;
+    const url = `https://dev.schweizmobil.ch/api/4/feature/sightseeing/${idsString}?lang=${lang}`;
     
     console.log(`Fetching POI details for ${ids.length} IDs...`);
     
