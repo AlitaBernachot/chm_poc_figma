@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import mapImage from "figma:asset/41aba0057f9f7c825a2d93c5e0cc3b84e958b742.png";
@@ -545,8 +545,11 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     { name: "Seasonal", icon: Calendar },
   ];
 
-  const filteredPOIs = pois.filter((poi) =>
-    poi.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredPOIs = useMemo(() => 
+    pois.filter((poi) =>
+      poi.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
+    [pois, searchQuery]
   );
 
   const scrollToSection = (sectionId: string) => {
@@ -1118,34 +1121,34 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     setReviewAction("comment");
   };
 
-  const handleClosePOI = () => {
+  const handleClosePOI = useCallback(() => {
     setSelectedPOI(null);
     setIsSidebarVisible(true);
     setIsMapViewMode(true); // Enter map view mode
     onMapViewChange?.(true);
-  };
+  }, [onMapViewChange]);
 
-  const handleSelectPOI = (id: string) => {
+  const handleSelectPOI = useCallback((id: string) => {
     setSelectedPOI(id);
     setIsMapViewMode(false); // Exit map view mode when selecting a POI
     onMapViewChange?.(false);
-  };
+  }, [onMapViewChange]);
 
-  const handleImportPOIs = () => {
+  const handleImportPOIs = useCallback(() => {
     setShowImportScreen(true);
     setSelectedPOI(null);
     setIsSidebarVisible(false); // Close the left panel
     setIsMapViewMode(false);
     onMapViewChange?.(false);
-  };
+  }, [onMapViewChange]);
 
-  const handleNavigateToPoi = () => {
+  const handleNavigateToPoi = useCallback(() => {
     setShowImportScreen(false); // Close import screen if open
     setSelectedPOI("new"); // Select a POI (or create new)
     setIsSidebarVisible(true); // Show the left panel
     setIsMapViewMode(false);
     onMapViewChange?.(false);
-  };
+  }, [onMapViewChange]);
 
   const handleAiOptimizeSeo = () => {
     // Store original SEO values
@@ -1238,7 +1241,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   };
 
   // Filter POIs for map view
-  const filteredMapPOIs = pois.filter(poi => {
+  const filteredMapPOIs = useMemo(() => pois.filter(poi => {
     if (!poi.hasLocation) return false;
     
     // Category filter
@@ -1272,7 +1275,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     }
     
     return true;
-  });
+  }), [pois, mapFilterCategory, mapFilterStatus, mapFilterSeason]);
 
   return (
     <DndProvider backend={HTML5Backend}>
