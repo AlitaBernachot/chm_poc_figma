@@ -732,7 +732,7 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
                     <button
                       key={tag}
                       onClick={() => onToggleTag(tag)}
-                      className={`px-2.5 py-1 text-xs rounded-full shadow-sm transition-all animate-[fadeIn_0.5s_ease-in-out] ${
+                      className={`capitalize px-2.5 py-1 text-xs rounded-full shadow-sm transition-all animate-[fadeIn_0.5s_ease-in-out] ${
                         selectedTags.includes(tag)
                           ? "text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
