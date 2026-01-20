@@ -88,6 +88,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { MapFilters } from "./MapFilters";
 import { getCurrentPOIs, type POI as StorePOI } from "../utils/poiStore";
+import { extractKeywordsFromDescription } from "../utils/aiKeywords";
 
 // Use POI type from poiStore
 type POI = StorePOI;
@@ -636,17 +637,35 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     setSelectedTags(selectedTags.filter((t) => t !== tag));
   };
 
-  const handleAiGenerateTags = () => {
+  const handleAiGenerateTags = async () => {
     setIsAiGeneratingTags(true);
-    setTimeout(() => {
-      const newTags = ["Scenic Views", "Photography Spot", "Historic Site"];
-      const tagsToRemove = ["Wheelchair Accessible"];
-      setAiGeneratedTags(newTags);
-      setAiSuggestedRemoveTags(tagsToRemove);
-      setSelectedTags([...selectedTags.filter(tag => !tagsToRemove.includes(tag)), ...newTags]);
+    
+    try {
+      // Extract keywords from German POI description
+      const extractedKeywords = await extractKeywordsFromDescription(germanDescription);
+      
+      if (extractedKeywords.length > 0) {
+        // Filter out keywords that are already selected
+        const newTags = extractedKeywords.filter(
+          keyword => !selectedTags.includes(keyword)
+        );
+        
+        // For now, we don't suggest removing tags (could be enhanced with AI logic)
+        const tagsToRemove: string[] = [];
+        
+        setAiGeneratedTags(newTags);
+        setAiSuggestedRemoveTags(tagsToRemove);
+        setSelectedTags([...selectedTags.filter(tag => !tagsToRemove.includes(tag)), ...newTags]);
+        setShowValidateButton(true);
+      } else {
+        console.warn('No keywords extracted from description');
+      }
+    } catch (error) {
+      console.error('Failed to generate AI tags:', error);
+      // Show user-friendly error or fallback to manual tagging
+    } finally {
       setIsAiGeneratingTags(false);
-      setShowValidateButton(true);
-    }, 5000);
+    }
   };
 
   const validateAiTags = () => {
