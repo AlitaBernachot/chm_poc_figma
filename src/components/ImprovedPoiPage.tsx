@@ -409,20 +409,35 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
     };
   }, []);
   
-  // Sync selectedPOI with URL params
+  // Sync selectedPOI with URL params (only when URL changes externally)
   useEffect(() => {
     const idFromUrl = searchParams.get('id');
     if (idFromUrl && idFromUrl !== selectedPOI) {
       setSelectedPOI(idFromUrl);
     }
-  }, [searchParams, selectedPOI]);
+  }, [searchParams]);
   
-  // Update URL when selectedPOI changes
+  // Update URL when selectedPOI changes (avoid loop by not depending on searchParams)
   useEffect(() => {
-    if (selectedPOI) {
+    const currentId = searchParams.get('id');
+    if (selectedPOI && selectedPOI !== currentId) {
       setSearchParams({ id: selectedPOI }, { replace: true });
     }
-  }, [selectedPOI, setSearchParams]);
+  }, [selectedPOI]);
+  
+  // Load POI data when selectedPOI changes
+  useEffect(() => {
+    if (selectedPOI && selectedPOI !== 'new') {
+      const currentPoi = pois.find(poi => poi.id === selectedPOI);
+      if (currentPoi && currentPoi.name) {
+        setGermanTitle(currentPoi.name);
+      }
+    } else {
+      // Clear form when creating new POI
+      setGermanTitle("");
+    }
+  }, [selectedPOI, pois]);
+  
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
@@ -1721,6 +1736,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
               >
                 {/* Technical Details */}
                 <TechnicalDetailsSection
+                  poiTitle={germanTitle}
                   categories={categories}
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
@@ -1865,6 +1881,11 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center bg-white/90 backdrop-blur-sm rounded p-6 shadow-lg border border-gray-200">
                           <MapPin className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                          {germanTitle && (
+                            <h2 className="text-xl font-bold text-gray-900 mb-3">
+                              {germanTitle}
+                            </h2>
+                          )}
                           <h3 className="text-lg font-bold text-gray-800 mb-1">
                             Click to set location
                           </h3>

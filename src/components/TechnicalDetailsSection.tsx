@@ -55,6 +55,9 @@ interface Tag {
 }
 
 interface TechnicalDetailsSectionProps {
+  // POI Info
+  poiTitle?: string;
+  
   // Category
   categories: Category[];
   selectedCategory: string;
@@ -200,6 +203,7 @@ const DraggablePhoto = ({
 };
 
 export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = ({
+  poiTitle,
   categories,
   selectedCategory,
   onCategoryChange,
@@ -261,8 +265,8 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="bg-white rounded shadow p-6 border border-gray-200">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 pb-3 border-b border-gray-200">
-          Technical Details
+        <h2 className="text-lg font-bold text-gray-800 mb-4 pb-3 border-b border-gray-200 truncate" title={poiTitle ? `Technical Details for ${poiTitle}` : 'Technical Details'}>
+          Technical Details{poiTitle ? ` for ${poiTitle}` : ''}
         </h2>
 
         <div className="space-y-4">
