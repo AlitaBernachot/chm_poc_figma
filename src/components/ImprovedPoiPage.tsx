@@ -757,7 +757,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
       
       setIsAiTranslating(false);
       setShowTranslateActions(true);
-    }, 3000);
+    }, 1000);
   };
 
   const handleValidateTranslation = () => {
@@ -798,7 +798,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
       setNextPhotoId(nextPhotoId + 1);
       setIsThinkingPicture(false);
       setShowPictureActions(true);
-    }, 3000);
+    }, 1000);
   };
 
   const handleValidatePictures = () => {
@@ -956,7 +956,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
       setNextRouteId(nextRouteId + 3);
       setIsThinkingRoutes(false);
       setShowRouteActions(true);
-    }, 3000);
+    }, 1000);
   };
 
   const handleValidateRoutes = () => {
