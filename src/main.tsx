@@ -2,6 +2,9 @@
   import { createRoot } from "react-dom/client";
   import App from "./App.tsx";
   import "./index.css";
+import { loadOpenAIApiKey } from "./utils/localStorage";
 
-  createRoot(document.getElementById("root")!).render(<App />);
-  
+// Load OpenAI API key from localStorage at app initialization
+loadOpenAIApiKey();
+
+createRoot(document.getElementById("root")!).render(<App />);
