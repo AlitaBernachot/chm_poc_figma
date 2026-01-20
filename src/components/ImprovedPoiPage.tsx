@@ -1608,19 +1608,19 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
                         "#fef2f2")
                     }
                   >
-                    🇫🇷 FR
+                    DE
                   </button>
                   <button
                     onClick={() => openLanguage("english")}
                     className="px-2 py-1 text-xs bg-gray-50 text-gray-700 hover:bg-gray-100 rounded transition-colors font-medium flex items-center gap-1"
                   >
-                    🇬🇧 EN
+                    EN
                   </button>
                   <button
-                    onClick={() => openLanguage("german")}
+                    onClick={() => openLanguage("french")}
                     className="px-2 py-1 text-xs bg-gray-50 text-gray-700 hover:bg-gray-100 rounded transition-colors font-medium flex items-center gap-1"
                   >
-                    🇩🇪 DE
+                    FR
                   </button>
                   {additionalLanguages.map((lang) => (
                     <button
