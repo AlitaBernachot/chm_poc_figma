@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import mapImage from "figma:asset/41aba0057f9f7c825a2d93c5e0cc3b84e958b742.png";
@@ -295,13 +296,15 @@ const categories = [
 ];
 
 interface ImprovedPoiPageProps {
-  onNavigateHome?: () => void;
   showAiButtons: boolean;
   onToggleAiButtons: () => void;
   onMapViewChange?: (isMapView: boolean) => void;
 }
 
-export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggleAiButtons, onMapViewChange }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
+export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMapViewChange }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
   // Load POIs from cache or use fallback
   const [pois, setPois] = useState<POI[]>(() => {
     const cachedPOIs = getCurrentPOIs();
@@ -309,13 +312,12 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   });
   
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
-    "new",
+    searchParams.get('id') || "new",
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [isMapViewMode, setIsMapViewMode] = useState(false); // New state for map view mode
-  const [showImportScreen, setShowImportScreen] = useState(false); // Import POIs screen
   
   // Map view filters
   const [mapFilterCategory, setMapFilterCategory] = useState<string>("all");
@@ -406,6 +408,21 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
       window.removeEventListener('pois-loaded', handlePOIsLoaded as EventListener);
     };
   }, []);
+  
+  // Sync selectedPOI with URL params
+  useEffect(() => {
+    const idFromUrl = searchParams.get('id');
+    if (idFromUrl && idFromUrl !== selectedPOI) {
+      setSelectedPOI(idFromUrl);
+    }
+  }, [searchParams, selectedPOI]);
+  
+  // Update URL when selectedPOI changes
+  useEffect(() => {
+    if (selectedPOI) {
+      setSearchParams({ id: selectedPOI }, { replace: true });
+    }
+  }, [selectedPOI, setSearchParams]);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
@@ -1126,7 +1143,9 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     setIsSidebarVisible(true);
     setIsMapViewMode(true); // Enter map view mode
     onMapViewChange?.(true);
-  }, [onMapViewChange]);
+    // Clear the id param to show map view
+    setSearchParams({}, { replace: true });
+  }, [onMapViewChange, setSearchParams]);
 
   const handleSelectPOI = useCallback((id: string) => {
     setSelectedPOI(id);
@@ -1135,12 +1154,8 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   }, [onMapViewChange]);
 
   const handleImportPOIs = useCallback(() => {
-    setShowImportScreen(true);
-    setSelectedPOI(null);
-    setIsSidebarVisible(false); // Close the left panel
-    setIsMapViewMode(false);
-    onMapViewChange?.(false);
-  }, [onMapViewChange]);
+    navigate('/import-pois');
+  }, [navigate]);
 
   const handleNavigateToPoi = useCallback(() => {
     setShowImportScreen(false); // Close import screen if open
@@ -1298,19 +1313,14 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
         showAiButtons={showAiButtons}
         onToggleSidebar={() => {}} // Remove toggle action from burger
         onToggleAiButtons={onToggleAiButtons}
-        onLogoClick={onNavigateHome}
-        onNavigateToDashboard={onNavigateHome}
+        onLogoClick={() => navigate('/dashboard')}
+        onNavigateToDashboard={() => navigate('/dashboard')}
         onNavigateToPoi={handleNavigateToPoi}
         onImportPOIs={handleImportPOIs}
       />
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Import POIs Screen */}
-        {showImportScreen ? (
-          <ImportPOIsScreen onClose={() => setShowImportScreen(false)} />
-        ) : (
-          <>
-            <Sidebar
+        <Sidebar
               isVisible={isSidebarVisible}
               pois={filteredPOIs}
               selectedPOI={selectedPOI}
@@ -2887,8 +2897,6 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
         </div>
       )}
 
-          </>
-        )}
       </div>
     </div>
     </DndProvider>

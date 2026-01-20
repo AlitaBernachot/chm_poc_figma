@@ -1,13 +1,40 @@
 import { Upload, Map, Globe, Sparkles, FileUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { TopBar } from "./TopBar";
+import { useState } from "react";
 
 interface ImportPOIsScreenProps {
   onClose?: () => void;
 }
 
 export default function ImportPOIsScreen({ onClose }: ImportPOIsScreenProps) {
+  const navigate = useNavigate();
+  const [showAiButtons] = useState(true);
+  
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1); // Go back to previous page
+    }
+  };
+  
   return (
-    <div className="h-full w-full bg-white flex items-center justify-center overflow-hidden">
-      <div className="max-w-5xl mx-auto px-8">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <TopBar
+        isSidebarVisible={false}
+        showAiButtons={showAiButtons}
+        onToggleSidebar={() => {}}
+        onToggleAiButtons={() => {}}
+        onLogoClick={() => navigate('/dashboard')}
+        onNavigateToDashboard={() => navigate('/dashboard')}
+        onNavigateToPoi={() => navigate('/point-of-interest/edit?id=new')}
+        onImportPOIs={() => navigate('/import-pois')}
+      />
+      
+      <div className="flex-1 w-full bg-white flex items-center justify-center overflow-auto">
+        <div className="max-w-5xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -111,6 +138,7 @@ export default function ImportPOIsScreen({ onClose }: ImportPOIsScreenProps) {
               Reach Us
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>

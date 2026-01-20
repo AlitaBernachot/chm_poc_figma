@@ -21,15 +21,16 @@ import {
   ChevronDown
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { TopBar } from "./TopBar";
 
 interface DashboardProps {
-  onNavigateToPoi: () => void;
   showAiButtons: boolean;
   onToggleAiButtons: () => void;
 }
 
-export const Dashboard = ({ onNavigateToPoi, showAiButtons, onToggleAiButtons }: DashboardProps) => {
+export const Dashboard = ({ showAiButtons, onToggleAiButtons }: DashboardProps) => {
+  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
   const [poiStatusFilter, setPoiStatusFilter] = useState<"all" | "pending" | "changes" | "published">("all");
   const [routeFilter, setRouteFilter] = useState<"all" | "Pending Review" | "Changes Requested" | "Published">("all");
@@ -130,7 +131,8 @@ export const Dashboard = ({ onNavigateToPoi, showAiButtons, onToggleAiButtons }:
         showAiButtons={showAiButtons}
         onToggleSidebar={() => {}}
         onToggleAiButtons={onToggleAiButtons}
-        onNavigateToPoi={onNavigateToPoi}
+        onNavigateToPoi={() => navigate('/point-of-interest/edit?id=new')}
+        onImportPOIs={() => navigate('/import-pois')}
       />
       <div className="p-8 max-w-[1800px] mx-auto">
         {/* Header with Actions */}
@@ -140,8 +142,8 @@ export const Dashboard = ({ onNavigateToPoi, showAiButtons, onToggleAiButtons }:
             <p className="text-gray-600">Welcome to the Geo Back Office</p>
           </div>
           <div className="flex gap-3">
-            <button 
-              onClick={onNavigateToPoi}
+            <button
+              onClick={() => navigate('/point-of-interest/edit?id=new')}
               className="flex items-center gap-2 px-4 py-2.5 text-white rounded hover:shadow-lg transition-all"
               style={{ backgroundColor: "#d4021c" }}
             >
@@ -463,7 +465,7 @@ export const Dashboard = ({ onNavigateToPoi, showAiButtons, onToggleAiButtons }:
               {filteredPois.map((poi) => (
                 <div 
                   key={poi.id}
-                  onClick={onNavigateToPoi}
+                  onClick={() => navigate(`/point-of-interest/edit?id=${poi.id}`)}
                   className="flex items-center justify-between p-3 border border-gray-200 rounded hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer group"
                 >
                   <div className="flex-1">
