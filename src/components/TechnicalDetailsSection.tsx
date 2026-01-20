@@ -1,5 +1,6 @@
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useState } from "react";
 import {
   ChevronDown,
   Sparkles,
@@ -25,6 +26,7 @@ import {
   Home,
   Sun,
   Calendar,
+  Snowflake,
 } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
@@ -246,6 +248,16 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
   onRemoveTechnicalCustomField,
   showAiButtons,
 }) => {
+  const [selectedSeason, setSelectedSeason] = useState<string>("all"); // summer, winter, or all
+  
+  const toggleSeason = (season: string) => {
+    if (season === "all") {
+      setSelectedSeason("all");
+    } else {
+      setSelectedSeason(season);
+    }
+  };
+  
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="bg-white rounded shadow p-6 border border-gray-200">
@@ -326,6 +338,72 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
                 })()}
               </div>
             )}
+          </div>
+
+          {/* Season Selector */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Season Availability
+            </label>
+            <div className="flex gap-6 justify-start">
+              {/* Summer Button */}
+              <button
+                onClick={() => setSelectedSeason("summer")}
+                className={`flex flex-col items-center gap-2 transition-all ${
+                  selectedSeason === "summer" || selectedSeason === "all" ? "opacity-100" : "opacity-60 hover:opacity-80"
+                }`}
+              >
+                <div 
+                  className={`w-12 h-12 rounded flex items-center justify-center transition-all ${
+                    selectedSeason === "summer" || selectedSeason === "all"
+                      ? "bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg border-0" 
+                      : "bg-white hover:bg-gray-50 border border-gray-300"
+                  }`}
+                >
+                  <Sun className={`w-5 h-5 ${selectedSeason === "summer" || selectedSeason === "all" ? "text-white" : "text-gray-600"}`} />
+                </div>
+                <span className="text-xs text-gray-700 font-medium">Summer</span>
+              </button>
+
+              {/* Winter Button */}
+              <button
+                onClick={() => setSelectedSeason("winter")}
+                className={`flex flex-col items-center gap-2 transition-all ${
+                  selectedSeason === "winter" || selectedSeason === "all" ? "opacity-100" : "opacity-60 hover:opacity-80"
+                }`}
+              >
+                <div 
+                  className={`w-12 h-12 rounded flex items-center justify-center transition-all ${
+                    selectedSeason === "winter" || selectedSeason === "all"
+                      ? "bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg border-0" 
+                      : "bg-white hover:bg-gray-50 border border-gray-300"
+                  }`}
+                >
+                  <Snowflake className={`w-5 h-5 ${selectedSeason === "winter" || selectedSeason === "all" ? "text-white" : "text-gray-600"}`} />
+                </div>
+                <span className="text-xs text-gray-700 font-medium">Winter</span>
+              </button>
+
+              {/* All Year Button */}
+              <button
+                onClick={() => setSelectedSeason("all")}
+                className={`flex flex-col items-center gap-2 transition-all ${
+                  selectedSeason === "all" ? "opacity-100" : "opacity-60 hover:opacity-80"
+                }`}
+              >
+                <div 
+                  className={`w-12 h-12 rounded flex items-center justify-center transition-all ${
+                    selectedSeason === "all" 
+                      ? "shadow-lg border-0" 
+                      : "bg-white hover:bg-gray-50 border border-gray-300"
+                  }`}
+                  style={selectedSeason === "all" ? { backgroundColor: "#d4021c" } : {}}
+                >
+                  <Calendar className={`w-5 h-5 ${selectedSeason === "all" ? "text-white" : "text-gray-600"}`} />
+                </div>
+                <span className="text-xs text-gray-700 font-medium">All Year</span>
+              </button>
+            </div>
           </div>
 
           <div>
