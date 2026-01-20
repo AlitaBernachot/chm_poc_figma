@@ -1,7 +1,7 @@
 
-  import { createRoot } from "react-dom/client";
-  import App from "./App.tsx";
-  import "./index.css";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
 import { loadOpenAIApiKey } from "./utils/localStorage";
 import { initializePOIs } from "./utils/poiStore";
 

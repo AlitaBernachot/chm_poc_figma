@@ -93,7 +93,7 @@ import { getCurrentPOIs, type POI as StorePOI } from "../utils/poiStore";
 type POI = StorePOI;
 
 // Fallback mock POIs for when API data is not yet loaded
-const fallbackMockPOIs: POI[] = [
+const fallbackpois: POI[] = [
   { id: "new", name: "", status: "draft", hasLocation: false, lastUpdated: "2024-01-15", reviewStatus: "pending", category: "poi", season: "all-year" },
   {
     id: "2",
@@ -304,7 +304,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   // Load POIs from cache or use fallback
   const [pois, setPois] = useState<POI[]>(() => {
     const cachedPOIs = getCurrentPOIs();
-    return cachedPOIs.length > 0 ? cachedPOIs : fallbackMockPOIs;
+    return cachedPOIs.length > 0 ? cachedPOIs : fallbackpois;
   });
   
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
@@ -2670,21 +2670,21 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
                     <div className="flex-1">
                       <h3 className="text-lg font-bold text-gray-800 mb-1">
                         {previewLanguage === "french" &&
-                          (mockPOIs.find(
+                          (pois.find(
                             (poi) => poi.id === selectedPOI,
                           )?.name ||
                             "Untitled")}
                         {previewLanguage === "english" &&
-                          (mockPOIs.find(
+                          (pois.find(
                             (poi) => poi.id === selectedPOI,
                           )?.name
-                            ? `${mockPOIs.find((poi) => poi.id === selectedPOI)?.name} (EN)`
+                            ? `${pois.find((poi) => poi.id === selectedPOI)?.name} (EN)`
                             : "Untitled")}
                         {previewLanguage === "german" &&
-                          (mockPOIs.find(
+                          (pois.find(
                             (poi) => poi.id === selectedPOI,
                           )?.name
-                            ? `${mockPOIs.find((poi) => poi.id === selectedPOI)?.name} (DE)`
+                            ? `${pois.find((poi) => poi.id === selectedPOI)?.name} (DE)`
                             : "Untitled")}
                       </h3>
                       <div className="space-y-1 text-sm text-gray-600">
@@ -2699,7 +2699,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                              mockPOIs.find(
+                              pois.find(
                                 (poi) => poi.id === selectedPOI,
                               )?.status === "draft"
                                 ? "bg-yellow-100 text-yellow-700"
@@ -2707,18 +2707,18 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
                             }`}
                           >
                             {previewLanguage === "french" &&
-                              (mockPOIs.find(
+                              (pois.find(
                                 (poi) => poi.id === selectedPOI,
                               )?.status === "draft"
                                 ? "brouillon"
                                 : "publié")}
                             {previewLanguage === "english" &&
-                              (mockPOIs.find(
+                              (pois.find(
                                 (poi) => poi.id === selectedPOI,
                               )?.status ||
                                 "draft")}
                             {previewLanguage === "german" &&
-                              (mockPOIs.find(
+                              (pois.find(
                                 (poi) => poi.id === selectedPOI,
                               )?.status === "draft"
                                 ? "Entwurf"

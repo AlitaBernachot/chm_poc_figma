@@ -30,6 +30,8 @@ import {
   Banknote,
   ChevronLeft,
   ChevronRight,
+  Filter,
+  ArrowUpDown,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import toggleButtonImg from "figma:asset/46a386f5920c10a34be8f262c1ef2db5bfd254a3.png";
@@ -133,6 +135,18 @@ export const Sidebar = ({
   const [width, setWidth] = useState(320); // Default 320px (w-80)
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [filters, setFilters] = useState({
+    reviewRequired: false,
+    changesRequested: false,
+    commented: false,
+    published: false,
+    draft: false,
+  });
+  const [sortOption, setSortOption] = useState<string>("title-asc");
+  const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
   const MIN_WIDTH = 280;
   const MAX_WIDTH = 800;
   
@@ -175,6 +189,35 @@ export const Sidebar = ({
     };
   }, [isResizing]);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setShowFilterDropdown(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setShowSortDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleFilterChange = (filterKey: keyof typeof filters) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterKey]: !prev[filterKey]
+    }));
+  };
+
+  const handleSortChange = (option: string) => {
+    setSortOption(option);
+    setShowSortDropdown(false);
+  };
+
   return (
     <>
       {isVisible && (
@@ -211,15 +254,110 @@ export const Sidebar = ({
               New place of interest
             </button>
 
-            <div className="relative mb-4">
-              <input
-                type="text"
-                placeholder="Search for a POI"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full bg-gray-100 hover:bg-gray-150 focus:bg-white border border-transparent focus:border-blue-400 rounded-md px-4 py-2.5 pr-10 text-sm outline-none transition-all"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {/* Search and Filter/Sort Row */}
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search for a POI"
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="w-full bg-gray-100 hover:bg-gray-150 focus:bg-white border border-transparent focus:border-blue-400 rounded-md px-4 py-2.5 pr-10 text-sm outline-none transition-all"
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              </div>
+
+              {/* Filter Button */}
+              <div className="relative" ref={filterRef}>
+                <button
+                  onClick={() => {
+                    setShowFilterDropdown(!showFilterDropdown);
+                    setShowSortDropdown(false);
+                  }}
+                  className={`p-2.5 rounded border transition-all ${
+                    showFilterDropdown || Object.values(filters).some(v => v)
+                      ? "bg-red-50 border-red-400 text-red-600"
+                      : "bg-gray-100 border-transparent text-gray-600 hover:bg-gray-150"
+                  }`}
+                  title="Filter"
+                >
+                  <Filter className="w-4 h-4" />
+                </button>
+
+                {/* Filter Dropdown */}
+                {showFilterDropdown && (
+                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-50 w-56">
+                    <div className="p-3">
+                      <div className="text-xs font-semibold text-gray-500 mb-2">FILTER BY STATUS</div>
+                      {[
+                        { key: 'reviewRequired', label: 'Review required' },
+                        { key: 'changesRequested', label: 'Changes requested' },
+                        { key: 'commented', label: 'Commented' },
+                        { key: 'published', label: 'Published' },
+                        { key: 'draft', label: 'Draft' },
+                      ].map(({ key, label }) => (
+                        <label
+                          key={key}
+                          className="flex items-center gap-2 py-2 px-2 hover:bg-gray-50 rounded cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={filters[key as keyof typeof filters]}
+                            onChange={() => handleFilterChange(key as keyof typeof filters)}
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sort Button */}
+              <div className="relative" ref={sortRef}>
+                <button
+                  onClick={() => {
+                    setShowSortDropdown(!showSortDropdown);
+                    setShowFilterDropdown(false);
+                  }}
+                  className={`p-2.5 rounded border transition-all ${
+                    showSortDropdown
+                      ? "bg-blue-50 border-blue-400 text-blue-600"
+                      : "bg-gray-100 border-transparent text-gray-600 hover:bg-gray-150"
+                  }`}
+                  title="Sort"
+                >
+                  <ArrowUpDown className="w-4 h-4" />
+                </button>
+
+                {/* Sort Dropdown */}
+                {showSortDropdown && (
+                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-50 w-56">
+                    <div className="p-2">
+                      <div className="text-xs font-semibold text-gray-500 px-2 py-1.5">SORT BY</div>
+                      {[
+                        { value: 'title-asc', label: 'Title (A-Z)' },
+                        { value: 'title-desc', label: 'Title (Z-A)' },
+                        { value: 'updated-asc', label: 'Update date (Oldest first)' },
+                        { value: 'updated-desc', label: 'Update date (Newest first)' },
+                      ].map(({ value, label }) => (
+                        <button
+                          key={value}
+                          onClick={() => handleSortChange(value)}
+                          className={`w-full text-left px-2 py-2 text-sm rounded transition-colors ${
+                            sortOption === value
+                              ? "bg-blue-50 text-blue-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* POI List */}
