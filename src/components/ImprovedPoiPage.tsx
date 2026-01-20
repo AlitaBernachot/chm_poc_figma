@@ -9,6 +9,7 @@ import { Sidebar } from "./Sidebar";
 import { TechnicalDetailsSection } from "./TechnicalDetailsSection";
 import { TranslatableContentSection } from "./TranslatableContentSection";
 import { SecondaryToolbar } from "./SecondaryToolbar";
+import ImportPOIsScreen from "./ImportPOIsScreen";
 import {
   Clock,
   Type,
@@ -80,9 +81,12 @@ import {
   Search,
   MoreVertical,
   Route,
+  Filter,
+  SlidersHorizontal,
 } from "lucide-react";
 import { RichTextEditor } from "./RichTextEditor";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { MapFilters } from "./MapFilters";
 
 interface POI {
   id: string;
@@ -91,10 +95,12 @@ interface POI {
   hasLocation: boolean;
   lastUpdated?: string;
   reviewStatus?: "review-required" | "approved" | "pending";
+  category?: string;
+  season?: "summer" | "winter" | "all-year";
 }
 
 const mockPOIs: POI[] = [
-  { id: "1", name: "", status: "draft", hasLocation: false, lastUpdated: "2024-01-15", reviewStatus: "pending" },
+  { id: "1", name: "", status: "draft", hasLocation: false, lastUpdated: "2024-01-15", reviewStatus: "pending", category: "poi", season: "all-year" },
   {
     id: "2",
     name: "Bathing hut of Rorschach",
@@ -102,6 +108,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-14",
     reviewStatus: "approved",
+    category: "beaches",
+    season: "summer",
   },
   {
     id: "3",
@@ -110,6 +118,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-13",
     reviewStatus: "review-required",
+    category: "food",
+    season: "all-year",
   },
   {
     id: "4",
@@ -118,6 +128,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-12",
     reviewStatus: "approved",
+    category: "poi",
+    season: "all-year",
   },
   {
     id: "5",
@@ -126,6 +138,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-11",
     reviewStatus: "approved",
+    category: "beaches",
+    season: "all-year",
   },
   {
     id: "6",
@@ -134,6 +148,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-10",
     reviewStatus: "review-required",
+    category: "poi",
+    season: "all-year",
   },
   {
     id: "7",
@@ -142,6 +158,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-09",
     reviewStatus: "pending",
+    category: "poi",
+    season: "all-year",
   },
   {
     id: "8",
@@ -150,6 +168,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-08",
     reviewStatus: "approved",
+    category: "natural",
+    season: "winter",
   },
   {
     id: "9",
@@ -158,6 +178,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-07",
     reviewStatus: "approved",
+    category: "natural",
+    season: "summer",
   },
   {
     id: "10",
@@ -166,6 +188,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-06",
     reviewStatus: "review-required",
+    category: "natural",
+    season: "all-year",
   },
   {
     id: "11",
@@ -174,6 +198,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-05",
     reviewStatus: "approved",
+    category: "poi",
+    season: "all-year",
   },
   {
     id: "12",
@@ -182,6 +208,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-04",
     reviewStatus: "pending",
+    category: "poi",
+    season: "all-year",
   },
   {
     id: "13",
@@ -190,6 +218,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-03",
     reviewStatus: "approved",
+    category: "accommodation",
+    season: "winter",
   },
   {
     id: "14",
@@ -198,6 +228,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-02",
     reviewStatus: "review-required",
+    category: "natural",
+    season: "summer",
   },
   {
     id: "15",
@@ -206,6 +238,8 @@ const mockPOIs: POI[] = [
     hasLocation: true,
     lastUpdated: "2024-01-01",
     reviewStatus: "approved",
+    category: "poi",
+    season: "all-year",
   },
 ];
 
@@ -269,15 +303,24 @@ interface ImprovedPoiPageProps {
   onNavigateHome?: () => void;
   showAiButtons: boolean;
   onToggleAiButtons: () => void;
+  onMapViewChange?: (isMapView: boolean) => void;
 }
 
-export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggleAiButtons }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
+export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggleAiButtons, onMapViewChange }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
     "1",
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isMapVisible, setIsMapVisible] = useState(true);
+  const [isMapViewMode, setIsMapViewMode] = useState(false); // New state for map view mode
+  const [showImportScreen, setShowImportScreen] = useState(false); // Import POIs screen
+  
+  // Map view filters
+  const [mapFilterCategory, setMapFilterCategory] = useState<string>("all");
+  const [mapFilterStatus, setMapFilterStatus] = useState<string>("all");
+  const [mapFilterSeason, setMapFilterSeason] = useState<string>("all");
+  
   const [isEnglishExpanded, setIsEnglishExpanded] =
     useState(false);
   const [isGermanExpanded, setIsGermanExpanded] =
@@ -1042,6 +1085,30 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   const handleClosePOI = () => {
     setSelectedPOI(null);
     setIsSidebarVisible(true);
+    setIsMapViewMode(true); // Enter map view mode
+    onMapViewChange?.(true);
+  };
+
+  const handleSelectPOI = (id: string) => {
+    setSelectedPOI(id);
+    setIsMapViewMode(false); // Exit map view mode when selecting a POI
+    onMapViewChange?.(false);
+  };
+
+  const handleImportPOIs = () => {
+    setShowImportScreen(true);
+    setSelectedPOI(null);
+    setIsSidebarVisible(false); // Close the left panel
+    setIsMapViewMode(false);
+    onMapViewChange?.(false);
+  };
+
+  const handleNavigateToPoi = () => {
+    setShowImportScreen(false); // Close import screen if open
+    setSelectedPOI("1"); // Select a POI (or create new)
+    setIsSidebarVisible(true); // Show the left panel
+    setIsMapViewMode(false);
+    onMapViewChange?.(false);
   };
 
   const handleAiOptimizeSeo = () => {
@@ -1134,6 +1201,43 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     setOriginalSeoValues(null);
   };
 
+  // Filter POIs for map view
+  const filteredMapPOIs = mockPOIs.filter(poi => {
+    if (!poi.hasLocation) return false;
+    
+    // Category filter
+    if (mapFilterCategory !== "all" && poi.category !== mapFilterCategory) {
+      return false;
+    }
+    
+    // Status filter
+    if (mapFilterStatus !== "all") {
+      if (mapFilterStatus === "review-required" && poi.reviewStatus !== "review-required") {
+        return false;
+      }
+      if (mapFilterStatus === "approved" && poi.reviewStatus !== "approved") {
+        return false;
+      }
+      if (mapFilterStatus === "pending" && poi.reviewStatus !== "pending") {
+        return false;
+      }
+      if (mapFilterStatus === "draft" && poi.status !== "draft") {
+        return false;
+      }
+      if (mapFilterStatus === "published" && poi.status !== "published") {
+        return false;
+      }
+    }
+    
+    // Season filter
+    if (mapFilterSeason !== "all") {
+      if (poi.season === "all-year") return true; // All-year POIs always show
+      if (mapFilterSeason !== poi.season) return false;
+    }
+    
+    return true;
+  });
+
   return (
     <DndProvider backend={HTML5Backend}>
       <style>
@@ -1157,23 +1261,104 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
         onToggleAiButtons={onToggleAiButtons}
         onLogoClick={onNavigateHome}
         onNavigateToDashboard={onNavigateHome}
+        onNavigateToPoi={handleNavigateToPoi}
+        onImportPOIs={handleImportPOIs}
       />
 
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar
-          isVisible={isSidebarVisible}
-          pois={filteredPOIs}
-          selectedPOI={selectedPOI}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-          onSelectPOI={setSelectedPOI}
-          onSearchChange={setSearchQuery}
-          isFullWidth={!selectedPOI}
-          onToggleVisibility={() => setIsSidebarVisible(!isSidebarVisible)}
-        />
+        {/* Import POIs Screen */}
+        {showImportScreen ? (
+          <ImportPOIsScreen onClose={() => setShowImportScreen(false)} />
+        ) : (
+          <>
+            <Sidebar
+              isVisible={isSidebarVisible}
+              pois={filteredPOIs}
+              selectedPOI={selectedPOI}
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+              onSelectPOI={handleSelectPOI}
+              onSearchChange={setSearchQuery}
+              isFullWidth={!selectedPOI}
+              onToggleVisibility={() => setIsSidebarVisible(!isSidebarVisible)}
+              isMapViewMode={isMapViewMode}
+              onNewPOI={handleNavigateToPoi}
+            />
+
+            {/* Map View Mode - Show map with all POIs */}
+            {isMapViewMode && !selectedPOI && (
+          <div className="flex-1 relative overflow-hidden">
+            <img
+              src={mapImage}
+              alt="Map with all POIs"
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Filter Panel - Top Right */}
+            <div className="absolute top-6 right-6 z-10">
+              <MapFilters
+                filterCategory={mapFilterCategory}
+                filterStatus={mapFilterStatus}
+                filterSeason={mapFilterSeason}
+                onFilterCategoryChange={setMapFilterCategory}
+                onFilterStatusChange={setMapFilterStatus}
+                onFilterSeasonChange={setMapFilterSeason}
+                filteredCount={filteredMapPOIs.length}
+                totalCount={mockPOIs.filter(poi => poi.hasLocation).length}
+                categories={categories}
+              />
+            </div>
+            
+            {/* POI Markers Overlay */}
+            <div className="absolute inset-0 pointer-events-none">
+              {filteredMapPOIs.map((poi, index) => (
+                <div
+                  key={poi.id}
+                  className="absolute pointer-events-auto"
+                  style={{
+                    left: `${20 + (index * 8) % 80}%`,
+                    top: `${15 + (index * 11) % 70}%`,
+                  }}
+                >
+                  <button
+                    onClick={() => handleSelectPOI(poi.id)}
+                    className="group relative"
+                    title={poi.name || `POI #${poi.id}`}
+                  >
+                    <div 
+                      className={`w-8 h-8 rounded-full border-4 border-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center ${
+                        poi.reviewStatus === "review-required" 
+                          ? "bg-orange-500" 
+                          : poi.status === "draft"
+                          ? "bg-yellow-500"
+                          : poi.reviewStatus === "approved"
+                          ? "bg-green-600"
+                          : "bg-red-600"
+                      }`}
+                    >
+                      <MapPin className="w-4 h-4 text-white" fill="white" />
+                    </div>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                      <div className="font-semibold">{poi.name || `POI #${poi.id}`}</div>
+                      <div className="text-gray-300 mt-0.5">
+                        {poi.season === "summer" && "☀️ Summer"} 
+                        {poi.season === "winter" && "❄️ Winter"}
+                        {poi.season === "all-year" && "🌍 All Year"}
+                        {" • "}
+                        {poi.reviewStatus === "review-required" && "⚠️ Review Required"}
+                        {poi.reviewStatus === "approved" && "✓ Approved"}
+                        {poi.reviewStatus === "pending" && "⏳ Pending"}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Enhanced Main Content */}
-        {selectedPOI && (
+        {selectedPOI && !isMapViewMode && (
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Sub-header */}
           <SecondaryToolbar
@@ -2250,7 +2435,6 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
           </div>
         </main>
         )}
-      </div>
 
       {/* Map Expansion Modal */}
       {isMapExpanded && (
@@ -2664,7 +2848,10 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
         </div>
       )}
 
+          </>
+        )}
       </div>
+    </div>
     </DndProvider>
   );
 }

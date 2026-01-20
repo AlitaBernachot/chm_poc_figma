@@ -8,6 +8,7 @@ export default function App() {
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [currentView, setCurrentView] = useState<"dashboard" | "poi">("poi");
   const [showAiButtons, setShowAiButtons] = useState(true);
+  const [isMapViewMode, setIsMapViewMode] = useState(false);
 
   const handleAIClick = () => {
     setShowAIPanel(!showAIPanel);
@@ -34,6 +35,7 @@ export default function App() {
           onNavigateHome={navigateToDashboard}
           showAiButtons={showAiButtons}
           onToggleAiButtons={() => setShowAiButtons(!showAiButtons)}
+          onMapViewChange={setIsMapViewMode}
         />
       )}
 
@@ -56,6 +58,7 @@ export default function App() {
       <AIAssistantModal 
         isOpen={showAIPanel}
         onClose={() => setShowAIPanel(false)}
+        isMapView={isMapViewMode}
       />
     </div>
   );

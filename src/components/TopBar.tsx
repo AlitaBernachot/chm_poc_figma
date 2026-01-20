@@ -10,6 +10,7 @@ interface TopBarProps {
   onLogoClick?: () => void;
   onNavigateToDashboard?: () => void;
   onNavigateToPoi?: () => void;
+  onImportPOIs?: () => void;
 }
 
 export const TopBar = ({
@@ -20,6 +21,7 @@ export const TopBar = ({
   onLogoClick,
   onNavigateToDashboard,
   onNavigateToPoi,
+  onImportPOIs,
 }: TopBarProps) => {
   return (
     <header
@@ -30,6 +32,7 @@ export const TopBar = ({
         <BurgerMenu 
           onNavigateToDashboard={onNavigateToDashboard}
           onNavigateToPoi={onNavigateToPoi}
+          onImportPOIs={onImportPOIs}
         />
 
         <div className="flex items-center gap-4">

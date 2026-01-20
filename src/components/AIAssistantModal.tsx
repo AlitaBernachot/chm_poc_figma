@@ -1,27 +1,44 @@
 import { useState } from "react";
-import { X, MoreHorizontal, ArrowUp, Plus, ChevronDown, Wand2, CheckCircle, FileText, Sparkles } from "lucide-react";
+import { X, MoreHorizontal, ArrowUp, Plus, ChevronDown, Wand2, CheckCircle, FileText, Sparkles, Map, Zap } from "lucide-react";
 
 interface AIAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isMapView?: boolean;
 }
 
-export default function AIAssistantModal({ isOpen, onClose }: AIAssistantModalProps) {
+export default function AIAssistantModal({ isOpen, onClose, isMapView = false }: AIAssistantModalProps) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [prompt, setPrompt] = useState("");
 
   if (!isOpen) return null;
 
-  const mainActions = [
+  // Actions for Map View Mode
+  const mapViewMainActions = [
+    { icon: Map, label: "Generate a list of POIs from a context" },
+    { icon: Zap, label: "Quick create a new POI from a context" },
+  ];
+
+  const mapViewAdditionalActions = [
+    { icon: FileText, label: "Analyze POI distribution" },
+    { icon: Sparkles, label: "Suggest POI improvements" },
+  ];
+
+  // Actions for Single POI Edit Mode
+  const poiEditMainActions = [
     { icon: CheckCircle, label: "Review the current POI" },
     { icon: Sparkles, label: "Improve the current POI" },
     { icon: FileText, label: "Generate a POI from a context" },
   ];
 
-  const additionalActions = [
+  const poiEditAdditionalActions = [
     { icon: Wand2, label: "Optimize SEO metadata" },
     { icon: CheckCircle, label: "Translate POI to another language" },
   ];
+
+  // Select actions based on view mode
+  const mainActions = isMapView ? mapViewMainActions : poiEditMainActions;
+  const additionalActions = isMapView ? mapViewAdditionalActions : poiEditAdditionalActions;
 
   const allActions = showMoreActions ? [...mainActions, ...additionalActions] : mainActions;
 

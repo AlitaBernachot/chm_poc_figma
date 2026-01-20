@@ -57,6 +57,8 @@ interface SidebarProps {
   onSearchChange: (query: string) => void;
   isFullWidth?: boolean;
   onToggleVisibility?: () => void;
+  isMapViewMode?: boolean;
+  onNewPOI?: () => void;
 }
 
 const categories: Category[] = [
@@ -125,12 +127,23 @@ export const Sidebar = ({
   onSearchChange,
   isFullWidth,
   onToggleVisibility,
+  isMapViewMode,
+  onNewPOI,
 }: SidebarProps) => {
   const [width, setWidth] = useState(320); // Default 320px (w-80)
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const MIN_WIDTH = 280;
   const MAX_WIDTH = 800;
+  
+  // Adjust width when entering/exiting map view mode
+  useEffect(() => {
+    if (isMapViewMode) {
+      setWidth(500); // Wider sidebar for map view
+    } else {
+      setWidth(320); // Reset to default when POI selected or map view exited
+    }
+  }, [isMapViewMode, selectedPOI]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -192,6 +205,7 @@ export const Sidebar = ({
             <button
               className="w-full text-white rounded px-4 py-3 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transition-all mb-4 hover:opacity-90"
               style={{ backgroundColor: "#d4021c" }}
+              onClick={onNewPOI}
             >
               <Plus className="w-5 h-5" />
               New place of interest

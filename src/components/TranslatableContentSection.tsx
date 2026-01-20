@@ -705,12 +705,12 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 onChange={(e) => onLeftColumnLanguageChange(e.target.value)}
                 className="px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
               >
-                {leftColumnLanguage === "french" && <option value="french">French (Main)</option>}
+                {leftColumnLanguage === "french" && <option value="french">French</option>}
                 {leftColumnLanguage === "english" && <option value="english">English</option>}
-                {leftColumnLanguage === "german" && <option value="german">German</option>}
-                {rightColumnLanguage !== "french" && leftColumnLanguage !== "french" && <option value="french">French (Main)</option>}
+                {leftColumnLanguage === "german" && <option value="german">German (Main)</option>}
+                {rightColumnLanguage !== "french" && leftColumnLanguage !== "french" && <option value="french">French</option>}
                 {rightColumnLanguage !== "english" && leftColumnLanguage !== "english" && <option value="english">English</option>}
-                {rightColumnLanguage !== "german" && leftColumnLanguage !== "german" && <option value="german">German</option>}
+                {rightColumnLanguage !== "german" && leftColumnLanguage !== "german" && <option value="german">German (Main)</option>}
                 {additionalLanguages.map((lang) => (
                   (leftColumnLanguage === lang.id.toString() || rightColumnLanguage !== lang.id.toString()) && (
                     <option key={lang.id} value={lang.id.toString()}>
@@ -738,12 +738,12 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 onChange={(e) => onRightColumnLanguageChange(e.target.value)}
                 className="px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
               >
-                {rightColumnLanguage === "french" && <option value="french">French (Main)</option>}
+                {rightColumnLanguage === "french" && <option value="french">French</option>}
                 {rightColumnLanguage === "english" && <option value="english">English</option>}
-                {rightColumnLanguage === "german" && <option value="german">German</option>}
-                {leftColumnLanguage !== "french" && rightColumnLanguage !== "french" && <option value="french">French (Main)</option>}
+                {rightColumnLanguage === "german" && <option value="german">German (Main)</option>}
+                {leftColumnLanguage !== "french" && rightColumnLanguage !== "french" && <option value="french">French</option>}
                 {leftColumnLanguage !== "english" && rightColumnLanguage !== "english" && <option value="english">English</option>}
-                {leftColumnLanguage !== "german" && rightColumnLanguage !== "german" && <option value="german">German</option>}
+                {leftColumnLanguage !== "german" && rightColumnLanguage !== "german" && <option value="german">German (Main)</option>}
                 {additionalLanguages.map((lang) => (
                   (rightColumnLanguage === lang.id.toString() || leftColumnLanguage !== lang.id.toString()) && (
                     <option key={lang.id} value={lang.id.toString()}>
