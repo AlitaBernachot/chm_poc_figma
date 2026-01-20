@@ -189,7 +189,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                    🇫🇷 Français (Default)
+                    Français (Default)
                   </span>
                 </div>
 
@@ -271,7 +271,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
                   className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded transition-colors"
                 >
                   <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    🇩🇪 Deutsch
+                    Deutsch
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isSeoDeLangExpanded ? "" : "-rotate-90"}`} />
                 </button>
@@ -355,7 +355,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
                   className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded transition-colors"
                 >
                   <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    🇮🇹 Italiano
+                    Italiano
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isSeoItLangExpanded ? "" : "-rotate-90"}`} />
                 </button>
@@ -491,7 +491,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                    🇫🇷 Français (Default)
+                    Français (Default)
                   </span>
                 </div>
 
@@ -550,7 +550,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
                   className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded transition-colors"
                 >
                   <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    🇩🇪 Deutsch
+                    Deutsch
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isSeoDeLangExpanded ? "" : "-rotate-90"}`} />
                 </button>
@@ -597,7 +597,7 @@ export const SEOSection: React.FC<SEOSectionProps> = ({
                   className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded transition-colors"
                 >
                   <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    🇮🇹 Italiano
+                    Italiano
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isSeoItLangExpanded ? "" : "-rotate-90"}`} />
                 </button>

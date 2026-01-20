@@ -81,6 +81,7 @@ interface TechnicalDetailsSectionProps {
   selectedTags: string[];
   customTags: string[];
   aiGeneratedTags: string[];
+  aiSuggestedRemoveTags: string[];
   isAiGeneratingTags: boolean;
   showValidateButton: boolean;
   newTagInput: string;
@@ -218,6 +219,7 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
   selectedTags,
   customTags,
   aiGeneratedTags,
+  aiSuggestedRemoveTags,
   isAiGeneratingTags,
   showValidateButton,
   newTagInput,
@@ -605,23 +607,41 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
               <div className="flex flex-wrap gap-1.5">
                 {defaultTags.map((tag) => {
                   const IconComponent = tag.icon;
+                  const isSelectedForRemoval = aiSuggestedRemoveTags.includes(tag.name);
+                  const isSelected = selectedTags.includes(tag.name);
+                  
                   return (
                     <button
                       key={tag.name}
                       onClick={() => onToggleTag(tag.name)}
-                      className={`px-2.5 py-1 text-xs rounded-full transition-all flex items-center gap-1.5 ${
-                        selectedTags.includes(tag.name)
+                      className={`px-2.5 py-1 text-xs rounded-full transition-all flex items-center gap-1.5 relative group ${
+                        isSelectedForRemoval
+                          ? "bg-gray-100 text-gray-700 shadow-sm border-2 border-dashed"
+                          : isSelected
                           ? "text-white shadow-sm"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                       style={
-                        selectedTags.includes(tag.name)
+                        isSelectedForRemoval
+                          ? { 
+                              borderColor: showValidateButton ? "#8b5cf6" : "#d1d5db"
+                            }
+                          : isSelected
                           ? { backgroundColor: "#d4021c" }
                           : {}
                       }
+                      title={isSelectedForRemoval && showValidateButton ? "AI suggests to remove this tag" : ""}
                     >
                       <IconComponent className="w-3.5 h-3.5" />
                       {tag.name}
+                      {isSelectedForRemoval && showValidateButton && (
+                        <>
+                          <X className="w-3.5 h-3.5 absolute -top-1 -right-1 bg-violet-600 rounded-full p-0.5 text-white" />
+                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            AI suggests to remove this tag
+                          </span>
+                        </>
+                      )}
                     </button>
                   );
                 })}

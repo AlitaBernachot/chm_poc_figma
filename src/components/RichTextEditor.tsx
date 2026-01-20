@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Bold, Italic, List, ListOrdered, Link as LinkIcon, Sparkles, Check, RotateCcw } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Link as LinkIcon, Sparkles, Check, RotateCcw, Eye, Code } from 'lucide-react';
 
 interface RichTextEditorProps {
   value: string;
@@ -13,20 +13,30 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange, placeholder, showAiButton = false, onAiGenerate, showHelpLink = false, onHelpClick }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const codeEditorRef = useRef<HTMLTextAreaElement>(null);
   const [isThinking, setIsThinking] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [generatedText, setGeneratedText] = useState('');
   const [originalValue, setOriginalValue] = useState('');
+  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
 
   useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
+    if (viewMode === 'preview' && editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value;
+    } else if (viewMode === 'code' && codeEditorRef.current && codeEditorRef.current.value !== value) {
+      codeEditorRef.current.value = value;
     }
-  }, [value]);
+  }, [value, viewMode]);
 
   const handleInput = () => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  const handleCodeInput = () => {
+    if (codeEditorRef.current) {
+      onChange(codeEditorRef.current.value);
     }
   };
 
@@ -128,21 +138,45 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
         >
           <LinkIcon className="w-4 h-4 text-gray-700" />
         </button>
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <button
+          type="button"
+          onClick={() => setViewMode(viewMode === 'preview' ? 'code' : 'preview')}
+          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          title="Toggle View Mode"
+        >
+          {viewMode === 'preview' ? <Code className="w-4 h-4 text-gray-700" /> : <Eye className="w-4 h-4 text-gray-700" />}
+        </button>
       </div>
 
       {/* Editor with Help Link */}
       <div className="relative">
-        <div
-          ref={editorRef}
-          contentEditable
-          onInput={handleInput}
-          className="px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-          data-placeholder={placeholder}
-          style={{
-            whiteSpace: 'pre-wrap',
-            wordWrap: 'break-word'
-          }}
-        />
+        {viewMode === 'preview' && (
+          <div
+            ref={editorRef}
+            contentEditable
+            onInput={handleInput}
+            className="px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+            data-placeholder={placeholder}
+            style={{
+              whiteSpace: 'pre-wrap',
+              wordWrap: 'break-word'
+            }}
+          />
+        )}
+        {viewMode === 'code' && (
+          <textarea
+            ref={codeEditorRef}
+            onInput={handleCodeInput}
+            className="w-full px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset font-mono text-sm"
+            placeholder={placeholder}
+            style={{
+              whiteSpace: 'pre-wrap',
+              wordWrap: 'break-word',
+              resize: 'vertical'
+            }}
+          />
+        )}
         {showHelpLink && onHelpClick && isEmpty && !isThinking && !showActions && (
           <button
             type="button"

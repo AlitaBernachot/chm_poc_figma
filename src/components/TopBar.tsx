@@ -1,11 +1,15 @@
-import { Menu, UserCircle, HelpCircle, Type, ExternalLink } from "lucide-react";
-import svgPaths from "../imports/svg-8l0xqjbg6b";
+import { UserCircle, HelpCircle, Type, ExternalLink } from "lucide-react";
+import logoImage from "figma:asset/ef1b8bba7a3f667eecda827bc7aaf76b96937417.png";
+import { BurgerMenu } from "./BurgerMenu";
 
 interface TopBarProps {
   isSidebarVisible: boolean;
   showAiButtons: boolean;
   onToggleSidebar: () => void;
   onToggleAiButtons: () => void;
+  onLogoClick?: () => void;
+  onNavigateToDashboard?: () => void;
+  onNavigateToPoi?: () => void;
 }
 
 export const TopBar = ({
@@ -13,6 +17,9 @@ export const TopBar = ({
   showAiButtons,
   onToggleSidebar,
   onToggleAiButtons,
+  onLogoClick,
+  onNavigateToDashboard,
+  onNavigateToPoi,
 }: TopBarProps) => {
   return (
     <header
@@ -20,73 +27,29 @@ export const TopBar = ({
       style={{ backgroundColor: "#C3C3C3" }}
     >
       <div className="flex items-center gap-4">
-        <button
-          onClick={onToggleSidebar}
-          className="p-2 hover:bg-gray-300 rounded-md transition-colors"
-          aria-label={
-            isSidebarVisible ? "Hide sidebar" : "Show sidebar"
-          }
-        >
-          <Menu className="w-5 h-5 text-gray-700" />
-        </button>
+        <BurgerMenu 
+          onNavigateToDashboard={onNavigateToDashboard}
+          onNavigateToPoi={onNavigateToPoi}
+        />
 
         <div className="flex items-center gap-4">
-          <div
-            className="rounded p-2 shadow-md"
+          <button
+            onClick={onLogoClick}
+            className="rounded p-2 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
             style={{ backgroundColor: "#d4021c" }}
           >
-            <div className="relative shrink-0 size-[19px]">
-              <svg
-                className="block size-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 19 19"
-              >
-                <g>
-                  <path
-                    d={svgPaths.p1fef0580}
-                    stroke="#ffffff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d={svgPaths.p28850300}
-                    fill="#ffffff"
-                    stroke="#ffffff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d={svgPaths.p2dc4db00}
-                    fill="#ffffff"
-                    stroke="#ffffff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d={svgPaths.p21b8db80}
-                    stroke="#ffffff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M2.375 15.8333H4.75"
-                    stroke="#ffffff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                  />
-                </g>
-              </svg>
-            </div>
-          </div>
-          <h1 className="font-['Source_Sans_3'] font-black text-gray-800 text-base tracking-wider uppercase">
+            <img 
+              src={logoImage} 
+              alt="Logo" 
+              className="w-[19px] h-[19px] object-cover"
+            />
+          </button>
+          <button
+            onClick={onLogoClick}
+            className="font-['Source_Sans_3'] font-black text-gray-800 text-base tracking-wider uppercase hover:text-gray-600 transition-colors cursor-pointer"
+          >
             Geo Back Office
-          </h1>
+          </button>
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import { FloatingQuickAccess } from "./FloatingQuickAccess";
 
 interface SecondaryToolbarProps {
   isReviewDropdownOpen: boolean;
@@ -24,6 +25,11 @@ interface SecondaryToolbarProps {
   isSaveDropdownOpen: boolean;
   setIsSaveDropdownOpen: (open: boolean) => void;
   onClose: () => void;
+  showFloatingQuickAccess: boolean;
+  scrollToSection: (sectionId: string) => void;
+  selectedCategory: string;
+  additionalLanguages: { id: number; name: string; flag: string; expanded: boolean }[];
+  openLanguage: (language: "french" | "english" | "german" | number) => void;
 }
 
 export function SecondaryToolbar({
@@ -40,6 +46,11 @@ export function SecondaryToolbar({
   isSaveDropdownOpen,
   setIsSaveDropdownOpen,
   onClose,
+  showFloatingQuickAccess,
+  scrollToSection,
+  selectedCategory,
+  additionalLanguages,
+  openLanguage,
 }: SecondaryToolbarProps) {
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between relative">
@@ -76,6 +87,15 @@ export function SecondaryToolbar({
             <Redo className="w-4 h-4" />
           </button>
         </div>
+
+        {showFloatingQuickAccess && (
+          <FloatingQuickAccess
+            scrollToSection={scrollToSection}
+            selectedCategory={selectedCategory}
+            additionalLanguages={additionalLanguages}
+            openLanguage={openLanguage}
+          />
+        )}
       </div>
 
       <div className="absolute left-1/2 -translate-x-1/2">

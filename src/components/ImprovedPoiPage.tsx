@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import mapImage from "figma:asset/41aba0057f9f7c825a2d93c5e0cc3b84e958b742.png";
@@ -265,7 +265,13 @@ const categories = [
   { value: "atms", label: "ATMs", icon: Banknote },
 ];
 
-export default function ImprovedPoiPage() {
+interface ImprovedPoiPageProps {
+  onNavigateHome?: () => void;
+  showAiButtons: boolean;
+  onToggleAiButtons: () => void;
+}
+
+export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggleAiButtons }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
     "1",
   );
@@ -342,7 +348,6 @@ export default function ImprovedPoiPage() {
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
-  const [showAiButtons, setShowAiButtons] = useState(true);
   const [translationViewMode, setTranslationViewMode] = useState<"accordion" | "columns">("accordion");
   const [leftColumnLanguage, setLeftColumnLanguage] = useState<string>("french");
   const [rightColumnLanguage, setRightColumnLanguage] = useState<string>("english");
@@ -356,6 +361,7 @@ export default function ImprovedPoiPage() {
   const [customIconUrl, setCustomIconUrl] = useState("");
   const [isAiGeneratingTags, setIsAiGeneratingTags] = useState(false);
   const [aiGeneratedTags, setAiGeneratedTags] = useState<string[]>([]);
+  const [aiSuggestedRemoveTags, setAiSuggestedRemoveTags] = useState<string[]>([]);
   const [showValidateButton, setShowValidateButton] = useState(false);
   const [frenchTitle, setFrenchTitle] = useState("");
   const [frenchDescription, setFrenchDescription] =
@@ -416,6 +422,8 @@ export default function ImprovedPoiPage() {
   const [isThinkingPicture, setIsThinkingPicture] = useState(false);
   const [showPictureActions, setShowPictureActions] = useState(false);
   const [nextPhotoId, setNextPhotoId] = useState(3);
+  const [showFloatingQuickAccess, setShowFloatingQuickAccess] = useState(false);
+  const quickAccessRef = useRef<HTMLDivElement>(null);
   // SEO States
   const [seoMetaTitle, setSeoMetaTitle] = useState("Rheinfall - The Magnificent Rhine Falls");
   const [seoMetaTitleDe, setSeoMetaTitleDe] = useState("Rheinfall - Die prächtigen Rheinfälle");
@@ -490,6 +498,24 @@ export default function ImprovedPoiPage() {
     }
   };
 
+  // Track quick access visibility on scroll
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const scrollContainer = e.target as HTMLElement;
+      if (quickAccessRef.current) {
+        const rect = quickAccessRef.current.getBoundingClientRect();
+        // Show floating quick access if the original is above viewport
+        setShowFloatingQuickAccess(rect.bottom < 0);
+      }
+    };
+
+    const scrollContainer = document.querySelector('.flex-1.overflow-y-auto.p-6');
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, [selectedPOI]);
+
   const swapLanguages = () => {
     const temp = leftColumnLanguage;
     setLeftColumnLanguage(rightColumnLanguage);
@@ -518,11 +544,17 @@ export default function ImprovedPoiPage() {
   ];
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag)
-        ? prev.filter((t) => t !== tag)
-        : [...prev, tag],
-    );
+    // If the tag is in aiSuggestedRemoveTags, clicking it should add it back and remove from aiSuggestedRemoveTags
+    if (aiSuggestedRemoveTags.includes(tag)) {
+      setAiSuggestedRemoveTags(prev => prev.filter(t => t !== tag));
+      setSelectedTags(prev => [...prev, tag]);
+    } else {
+      setSelectedTags((prev) =>
+        prev.includes(tag)
+          ? prev.filter((t) => t !== tag)
+          : [...prev, tag],
+      );
+    }
   };
 
   const addCustomTag = () => {
@@ -548,8 +580,10 @@ export default function ImprovedPoiPage() {
     setIsAiGeneratingTags(true);
     setTimeout(() => {
       const newTags = ["Scenic Views", "Photography Spot", "Historic Site"];
+      const tagsToRemove = ["Wheelchair Accessible"];
       setAiGeneratedTags(newTags);
-      setSelectedTags([...selectedTags, ...newTags]);
+      setAiSuggestedRemoveTags(tagsToRemove);
+      setSelectedTags([...selectedTags.filter(tag => !tagsToRemove.includes(tag)), ...newTags]);
       setIsAiGeneratingTags(false);
       setShowValidateButton(true);
     }, 5000);
@@ -565,16 +599,20 @@ export default function ImprovedPoiPage() {
     // Clear AI-generated tags state
     setShowValidateButton(false);
     setAiGeneratedTags([]);
+    setAiSuggestedRemoveTags([]);
   };
 
   const cancelAiTags = () => {
+    // Re-add the tags that AI suggested to remove
+    const tagsToReAdd = aiSuggestedRemoveTags.filter(tag => !selectedTags.includes(tag));
     // Remove all AI-generated tags from selected tags
     setSelectedTags(
-      selectedTags.filter((tag) => !aiGeneratedTags.includes(tag))
+      [...selectedTags.filter((tag) => !aiGeneratedTags.includes(tag)), ...tagsToReAdd]
     );
     // Clear AI-generated tags state
     setShowValidateButton(false);
     setAiGeneratedTags([]);
+    setAiSuggestedRemoveTags([]);
   };
 
   const copyCoordinates = () => {
@@ -707,14 +745,17 @@ export default function ImprovedPoiPage() {
   };
 
   const openLanguage = (
-    language: "english" | "german" | number,
+    language: "french" | "english" | "german" | number,
   ) => {
     // Scroll to translatable section
     scrollToSection("translatable-section");
 
     // Expand the language
     setTimeout(() => {
-      if (language === "english") {
+      if (language === "french") {
+        // French is always visible, just scroll to it
+        // No expansion needed
+      } else if (language === "english") {
         setIsEnglishExpanded(true);
       } else if (language === "german") {
         setIsGermanExpanded(true);
@@ -1112,11 +1153,13 @@ export default function ImprovedPoiPage() {
       <TopBar
         isSidebarVisible={isSidebarVisible}
         showAiButtons={showAiButtons}
-        onToggleSidebar={() => setIsSidebarVisible(!isSidebarVisible)}
-        onToggleAiButtons={() => setShowAiButtons(!showAiButtons)}
+        onToggleSidebar={() => {}} // Remove toggle action from burger
+        onToggleAiButtons={onToggleAiButtons}
+        onLogoClick={onNavigateHome}
+        onNavigateToDashboard={onNavigateHome}
       />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         <Sidebar
           isVisible={isSidebarVisible}
           pois={filteredPOIs}
@@ -1126,6 +1169,7 @@ export default function ImprovedPoiPage() {
           onSelectPOI={setSelectedPOI}
           onSearchChange={setSearchQuery}
           isFullWidth={!selectedPOI}
+          onToggleVisibility={() => setIsSidebarVisible(!isSidebarVisible)}
         />
 
         {/* Enhanced Main Content */}
@@ -1146,13 +1190,18 @@ export default function ImprovedPoiPage() {
             isSaveDropdownOpen={isSaveDropdownOpen}
             setIsSaveDropdownOpen={setIsSaveDropdownOpen}
             onClose={handleClosePOI}
+            showFloatingQuickAccess={showFloatingQuickAccess}
+            scrollToSection={scrollToSection}
+            selectedCategory={selectedCategory}
+            additionalLanguages={additionalLanguages}
+            openLanguage={openLanguage}
           />
 
           {/* Map and Form Area */}
           <div className="flex-1 overflow-y-auto p-6">
             <div className="max-w-7xl mx-auto space-y-6">
               {/* Quick Access Navigation */}
-              <div className="bg-white rounded shadow px-4 py-3 border border-gray-200">
+              <div ref={quickAccessRef} className="bg-white rounded shadow px-4 py-3 border border-gray-200">
                 <div className="flex flex-wrap items-center gap-2">
                   <Hash className="w-4 h-4 text-gray-500" />
                   <span className="text-sm font-semibold text-gray-600 mr-2">
@@ -1459,6 +1508,7 @@ export default function ImprovedPoiPage() {
                   selectedTags={selectedTags}
                   customTags={customTags}
                   aiGeneratedTags={aiGeneratedTags}
+                  aiSuggestedRemoveTags={aiSuggestedRemoveTags}
                   isAiGeneratingTags={isAiGeneratingTags}
                   showValidateButton={showValidateButton}
                   newTagInput={newTagInput}

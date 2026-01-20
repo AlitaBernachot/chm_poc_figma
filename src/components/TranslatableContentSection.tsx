@@ -233,12 +233,11 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
       {/* Conditional rendering based on view mode */}
       {translationViewMode === "accordion" ? (
         <div className="space-y-6">
-          {/* French (Main Language) - Always Open */}
+          {/* German (Main Language) - Always Open */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl">🇫🇷</span>
               <h3 className="text-base font-bold text-gray-700">
-                French (Main)
+                German (Main)
               </h3>
               <Pin className="w-4 h-4 text-gray-500" />
             </div>
@@ -249,8 +248,8 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
               </label>
               <input
                 type="text"
-                value={frenchTitle}
-                onChange={(e) => onFrenchTitleChange(e.target.value)}
+                value={germanTitle}
+                onChange={(e) => onGermanTitleChange(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 placeholder="Untitled"
               />
@@ -261,25 +260,25 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 Description
               </label>
               <RichTextEditor
-                value={frenchDescription}
-                onChange={onFrenchDescriptionChange}
+                value={germanDescription}
+                onChange={onGermanDescriptionChange}
                 placeholder=""
                 showAiButton={showAiButtons}
                 onAiGenerate={() =>
                   console.log(
-                    "AI Generate French Description",
+                    "AI Generate German Description",
                   )
                 }
                 showHelpLink={showAiButtons}
                 onHelpClick={() =>
                   console.log(
-                    "Help generate French description",
+                    "Help generate German description",
                   )
                 }
               />
             </div>
 
-            {/* Custom Fields for French */}
+            {/* Custom Fields for German */}
             {customFields.map((field) => (
               <div key={field.id} className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -330,6 +329,106 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
             ))}
           </div>
 
+          {/* French Translation - Collapsible */}
+          <div className="pt-4 border-t border-gray-200">
+            <button
+              onClick={() => onOpenLanguage("french")}
+              className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-gray-700">
+                  French (Translation)
+                </h3>
+              </div>
+              {isEnglishExpanded ? (
+                <ChevronUp className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-500" />
+              )}
+            </button>
+
+            {isEnglishExpanded && (
+              <div className="space-y-4 mt-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    value={frenchTitle}
+                    onChange={(e) => onFrenchTitleChange(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="Enter French title..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <RichTextEditor
+                    value={frenchDescription}
+                    onChange={onFrenchDescriptionChange}
+                    placeholder="Enter French description..."
+                    showAiButton={showAiButtons}
+                    onAiGenerate={() =>
+                      console.log(
+                        "AI Generate French Description",
+                      )
+                    }
+                    showHelpLink={showAiButtons}
+                    onHelpClick={() =>
+                      console.log(
+                        "Help generate French description",
+                      )
+                    }
+                  />
+                </div>
+
+                {/* Custom Fields for French */}
+                {customFields.map((field) => (
+                  <div key={`fr-${field.id}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {editingCustomFieldId === field.id ? (
+                        <input
+                          type="text"
+                          value={field.label}
+                          onChange={(e) => onUpdateCustomFieldLabel(field.id, e.target.value)}
+                          onBlur={() => onEditingCustomFieldIdChange(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              onEditingCustomFieldIdChange(null);
+                            }
+                          }}
+                          autoFocus
+                          className="flex-1 px-2 py-1 text-sm font-semibold text-gray-700 border border-blue-500 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
+                      ) : (
+                        <>
+                          <label className="text-sm font-semibold text-gray-700">
+                            {field.label}
+                          </label>
+                          <button
+                            onClick={() => onEditingCustomFieldIdChange(field.id)}
+                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            title="Edit field name"
+                          >
+                            <Pen className="w-3.5 h-3.5 text-gray-500" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                      placeholder={`Enter ${field.label.toLowerCase()}...`}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* English Translation - Collapsible */}
           <div className="pt-4 border-t border-gray-200">
             <button
@@ -337,7 +436,6 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
               className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-2xl">🇬🇧</span>
                 <h3 className="text-base font-bold text-gray-700">
                   English (Translation)
                 </h3>
@@ -431,113 +529,6 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
             )}
           </div>
 
-          {/* German Translation - Collapsible */}
-          <div className="pt-4 border-t border-gray-200">
-            <button
-              onClick={() => onOpenLanguage("german")}
-              className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🇩🇪</span>
-                <h3 className="text-base font-bold text-gray-700">
-                  German (Translation)
-                </h3>
-                <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded">
-                  Required
-                </span>
-                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-semibold rounded">
-                  2 fields missing
-                </span>
-              </div>
-              {isGermanExpanded ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
-              )}
-            </button>
-
-            {isGermanExpanded && (
-              <div className="space-y-4 mt-3">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    value={germanTitle}
-                    onChange={(e) => onGermanTitleChange(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    placeholder="Enter German title..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <RichTextEditor
-                    value={germanDescription}
-                    onChange={onGermanDescriptionChange}
-                    placeholder="Enter German description..."
-                    showAiButton={showAiButtons}
-                    onAiGenerate={() =>
-                      console.log(
-                        "AI Generate German Description",
-                      )
-                    }
-                    showHelpLink={showAiButtons}
-                    onHelpClick={() =>
-                      console.log(
-                        "Help generate German description",
-                      )
-                    }
-                  />
-                </div>
-
-                {/* Custom Fields for German */}
-                {customFields.map((field) => (
-                  <div key={`de-${field.id}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      {editingCustomFieldId === field.id ? (
-                        <input
-                          type="text"
-                          value={field.label}
-                          onChange={(e) => onUpdateCustomFieldLabel(field.id, e.target.value)}
-                          onBlur={() => onEditingCustomFieldIdChange(null)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              onEditingCustomFieldIdChange(null);
-                            }
-                          }}
-                          autoFocus
-                          className="flex-1 px-2 py-1 text-sm font-semibold text-gray-700 border border-blue-500 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                        />
-                      ) : (
-                        <>
-                          <label className="text-sm font-semibold text-gray-700">
-                            {field.label}
-                          </label>
-                          <button
-                            onClick={() => onEditingCustomFieldIdChange(field.id)}
-                            className="p-1 hover:bg-gray-100 rounded transition-colors"
-                            title="Edit field name"
-                          >
-                            <Pen className="w-3.5 h-3.5 text-gray-500" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                      placeholder={`Enter ${field.label.toLowerCase()}...`}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Additional Languages - Collapsible */}
           {additionalLanguages.map((lang) => (
             <div
@@ -549,9 +540,6 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">
-                    {lang.flag}
-                  </span>
                   <h3 className="text-base font-bold text-gray-700">
                     {lang.name} (Translation)
                   </h3>
@@ -693,9 +681,8 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                       <button
                         key={lang.name}
                         onClick={() => onAddLanguage(lang.name, lang.flag)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm text-gray-700 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm text-gray-700"
                       >
-                        <span className="text-lg">{lang.flag}</span>
                         <span>{lang.name}</span>
                       </button>
                     ))}
@@ -718,16 +705,16 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 onChange={(e) => onLeftColumnLanguageChange(e.target.value)}
                 className="px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
               >
-                {leftColumnLanguage === "french" && <option value="french">🇫🇷 French (Main)</option>}
-                {leftColumnLanguage === "english" && <option value="english">🇬🇧 English</option>}
-                {leftColumnLanguage === "german" && <option value="german">🇩🇪 German</option>}
-                {rightColumnLanguage !== "french" && leftColumnLanguage !== "french" && <option value="french">🇫🇷 French (Main)</option>}
-                {rightColumnLanguage !== "english" && leftColumnLanguage !== "english" && <option value="english">🇬🇧 English</option>}
-                {rightColumnLanguage !== "german" && leftColumnLanguage !== "german" && <option value="german">🇩🇪 German</option>}
+                {leftColumnLanguage === "french" && <option value="french">French (Main)</option>}
+                {leftColumnLanguage === "english" && <option value="english">English</option>}
+                {leftColumnLanguage === "german" && <option value="german">German</option>}
+                {rightColumnLanguage !== "french" && leftColumnLanguage !== "french" && <option value="french">French (Main)</option>}
+                {rightColumnLanguage !== "english" && leftColumnLanguage !== "english" && <option value="english">English</option>}
+                {rightColumnLanguage !== "german" && leftColumnLanguage !== "german" && <option value="german">German</option>}
                 {additionalLanguages.map((lang) => (
                   (leftColumnLanguage === lang.id.toString() || rightColumnLanguage !== lang.id.toString()) && (
                     <option key={lang.id} value={lang.id.toString()}>
-                      {lang.flag} {lang.name}
+                      {lang.name}
                     </option>
                   )
                 ))}
@@ -751,16 +738,16 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 onChange={(e) => onRightColumnLanguageChange(e.target.value)}
                 className="px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
               >
-                {rightColumnLanguage === "french" && <option value="french">🇫🇷 French (Main)</option>}
-                {rightColumnLanguage === "english" && <option value="english">🇬🇧 English</option>}
-                {rightColumnLanguage === "german" && <option value="german">🇩🇪 German</option>}
-                {leftColumnLanguage !== "french" && rightColumnLanguage !== "french" && <option value="french">🇫🇷 French (Main)</option>}
-                {leftColumnLanguage !== "english" && rightColumnLanguage !== "english" && <option value="english">🇬🇧 English</option>}
-                {leftColumnLanguage !== "german" && rightColumnLanguage !== "german" && <option value="german">🇩🇪 German</option>}
+                {rightColumnLanguage === "french" && <option value="french">French (Main)</option>}
+                {rightColumnLanguage === "english" && <option value="english">English</option>}
+                {rightColumnLanguage === "german" && <option value="german">German</option>}
+                {leftColumnLanguage !== "french" && rightColumnLanguage !== "french" && <option value="french">French (Main)</option>}
+                {leftColumnLanguage !== "english" && rightColumnLanguage !== "english" && <option value="english">English</option>}
+                {leftColumnLanguage !== "german" && rightColumnLanguage !== "german" && <option value="german">German</option>}
                 {additionalLanguages.map((lang) => (
                   (rightColumnLanguage === lang.id.toString() || leftColumnLanguage !== lang.id.toString()) && (
                     <option key={lang.id} value={lang.id.toString()}>
-                      {lang.flag} {lang.name}
+                      {lang.name}
                     </option>
                   )
                 ))}
@@ -968,9 +955,8 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                       <button
                         key={lang.name}
                         onClick={() => onAddLanguage(lang.name, lang.flag)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm text-gray-700 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm text-gray-700"
                       >
-                        <span className="text-lg">{lang.flag}</span>
                         <span>{lang.name}</span>
                       </button>
                     ))}
