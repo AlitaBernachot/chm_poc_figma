@@ -87,20 +87,14 @@ import {
 import { RichTextEditor } from "./RichTextEditor";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { MapFilters } from "./MapFilters";
+import { getCurrentPOIs, type POI as StorePOI } from "../utils/poiStore";
 
-interface POI {
-  id: string;
-  name: string;
-  status: "draft" | "published";
-  hasLocation: boolean;
-  lastUpdated?: string;
-  reviewStatus?: "review-required" | "approved" | "pending";
-  category?: string;
-  season?: "summer" | "winter" | "all-year";
-}
+// Use POI type from poiStore
+type POI = StorePOI;
 
-const mockPOIs: POI[] = [
-  { id: "1", name: "", status: "draft", hasLocation: false, lastUpdated: "2024-01-15", reviewStatus: "pending", category: "poi", season: "all-year" },
+// Fallback mock POIs for when API data is not yet loaded
+const fallbackMockPOIs: POI[] = [
+  { id: "new", name: "", status: "draft", hasLocation: false, lastUpdated: "2024-01-15", reviewStatus: "pending", category: "poi", season: "all-year" },
   {
     id: "2",
     name: "Bathing hut of Rorschach",
@@ -307,8 +301,14 @@ interface ImprovedPoiPageProps {
 }
 
 export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggleAiButtons, onMapViewChange }: ImprovedPoiPageProps = { showAiButtons: true, onToggleAiButtons: () => {} }) {
+  // Load POIs from cache or use fallback
+  const [pois, setPois] = useState<POI[]>(() => {
+    const cachedPOIs = getCurrentPOIs();
+    return cachedPOIs.length > 0 ? cachedPOIs : fallbackMockPOIs;
+  });
+  
   const [selectedPOI, setSelectedPOI] = useState<string | null>(
-    "1",
+    "new",
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -388,6 +388,23 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     "Family Friendly",
     "Wheelchair Accessible",
   ]);
+  
+  // Listen for POI data being loaded
+  useEffect(() => {
+    const handlePOIsLoaded = (event: CustomEvent) => {
+      const loadedPOIs = event.detail.pois as POI[];
+      if (loadedPOIs && loadedPOIs.length > 0) {
+        console.log(`Updating component with ${loadedPOIs.length} loaded POIs`);
+        setPois(loadedPOIs);
+      }
+    };
+    
+    window.addEventListener('pois-loaded', handlePOIsLoaded as EventListener);
+    
+    return () => {
+      window.removeEventListener('pois-loaded', handlePOIsLoaded as EventListener);
+    };
+  }, []);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
@@ -527,7 +544,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
     { name: "Seasonal", icon: Calendar },
   ];
 
-  const filteredPOIs = mockPOIs.filter((poi) =>
+  const filteredPOIs = pois.filter((poi) =>
     poi.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -1105,7 +1122,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
 
   const handleNavigateToPoi = () => {
     setShowImportScreen(false); // Close import screen if open
-    setSelectedPOI("1"); // Select a POI (or create new)
+    setSelectedPOI("new"); // Select a POI (or create new)
     setIsSidebarVisible(true); // Show the left panel
     setIsMapViewMode(false);
     onMapViewChange?.(false);
@@ -1202,7 +1219,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
   };
 
   // Filter POIs for map view
-  const filteredMapPOIs = mockPOIs.filter(poi => {
+  const filteredMapPOIs = pois.filter(poi => {
     if (!poi.hasLocation) return false;
     
     // Category filter
@@ -1304,7 +1321,7 @@ export default function ImprovedPoiPage({ onNavigateHome, showAiButtons, onToggl
                 onFilterStatusChange={setMapFilterStatus}
                 onFilterSeasonChange={setMapFilterSeason}
                 filteredCount={filteredMapPOIs.length}
-                totalCount={mockPOIs.filter(poi => poi.hasLocation).length}
+                totalCount={pois.filter(poi => poi.hasLocation).length}
                 categories={categories}
               />
             </div>
