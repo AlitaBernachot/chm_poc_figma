@@ -678,8 +678,8 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
     setIsAiGeneratingTags(true);
     
     try {
-      // Extract keywords from German POI description
-      const extractedKeywords = await extractKeywordsFromDescription(germanDescription);
+      // Extract keywords from English POI description
+      const extractedKeywords = await extractKeywordsFromDescription(englishDescription);
       
       if (extractedKeywords.length > 0) {
         // Filter out keywords that are already selected
@@ -687,8 +687,13 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
           keyword => !selectedTags.includes(keyword)
         );
         
-        // For now, we don't suggest removing tags (could be enhanced with AI logic)
-        const tagsToRemove: string[] = [];
+        // Find existing selected tags that are NOT in the extracted keywords
+        // These are tags that AI suggests removing because they're not relevant to the description
+        const tagsToRemove = selectedTags.filter(
+          tag => !extractedKeywords.some(keyword => 
+            keyword.toLowerCase() === tag.toLowerCase()
+          )
+        );
         
         setAiGeneratedTags(newTags);
         setAiSuggestedRemoveTags(tagsToRemove);
