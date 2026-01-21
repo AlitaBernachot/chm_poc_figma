@@ -14,29 +14,92 @@ interface RichTextEditorProps {
 export function RichTextEditor({ value, onChange, placeholder, showAiButton = false, onAiGenerate, showHelpLink = false, onHelpClick }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
+  const isInternalUpdate = useRef(false);
+  const lastValue = useRef(value);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const [isThinking, setIsThinking] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const [generatedText, setGeneratedText] = useState('');
   const [originalValue, setOriginalValue] = useState('');
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
+  const [hasSelection, setHasSelection] = useState(false);
+  const [selectionRange, setSelectionRange] = useState<Range | null>(null);
+  const [selectedText, setSelectedText] = useState<string>('');
 
   useEffect(() => {
-    if (viewMode === 'preview' && editorRef.current && editorRef.current.innerHTML !== value) {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
+    }
+    // Only update if the value changed from an external source
+    if (value === lastValue.current) {
+      return;
+    }
+    lastValue.current = value;
+    if (viewMode === 'preview' && editorRef.current) {
       editorRef.current.innerHTML = value;
-    } else if (viewMode === 'code' && codeEditorRef.current && codeEditorRef.current.value !== value) {
+    } else if (viewMode === 'code' && codeEditorRef.current) {
       codeEditorRef.current.value = value;
     }
   }, [value, viewMode]);
 
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString() || '';
+      setHasSelection(selectedText.trim().length > 0);
+    };
+
+    const editor = editorRef.current;
+    editor.addEventListener('mouseup', handleMouseUp);
+    editor.addEventListener('keyup', handleMouseUp);
+    
+    return () => {
+      editor.removeEventListener('mouseup', handleMouseUp);
+      editor.removeEventListener('keyup', handleMouseUp);
+    };
+  }, [viewMode]);
+
   const handleInput = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const newValue = editorRef.current.innerHTML;
+      
+      // Clear existing timer
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      
+      // Set new timer to debounce the onChange call
+      debounceTimer.current = setTimeout(() => {
+        lastValue.current = newValue;
+        onChange(newValue);
+      }, 150);
     }
   };
 
   const handleCodeInput = () => {
     if (codeEditorRef.current) {
-      onChange(codeEditorRef.current.value);
+      const newValue = codeEditorRef.current.value;
+      
+      // Clear existing timer
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      
+      // Set new timer to debounce the onChange call
+      debounceTimer.current = setTimeout(() => {
+        lastValue.current = newValue;
+        onChange(newValue);
+      }, 150);
     }
   };
 
@@ -53,8 +116,20 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
   };
 
   const handleHelpClick = () => {
-    // Store original value for revert
-    setOriginalValue(value);
+    // Store original value for revert - get it from the editor itself
+    const currentValue = editorRef.current?.innerHTML || '';
+    setOriginalValue(currentValue);
+    
+    // Capture the current selection range and store it for later use
+    const selection = window.getSelection();
+    let capturedSelectedText = '';
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0).cloneRange();
+      const selectedContent = selection.toString();
+      setSelectionRange(range);
+      setSelectedText(selectedContent);
+      capturedSelectedText = selectedContent;
+    }
     
     // Start thinking state
     setIsThinking(true);
@@ -66,28 +141,75 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
     
     // Simulate AI generation after 3 seconds
     setTimeout(() => {
-      const mockGeneratedText = '<p>This beautifully crafted point of interest offers visitors a unique experience combining historical significance with modern amenities. Located in a picturesque setting, it serves as a perfect destination for both casual tourists and dedicated explorers alike.</p><p>Visitors can enjoy various facilities and services designed to enhance their experience, making it an ideal stop along your journey through the region.</p>';
+      const mockGeneratedText = 'Lorem ipsum generated by AI.';
       
-      setGeneratedText(mockGeneratedText);
-      onChange(mockGeneratedText);
+      if (!editorRef.current) return;
+      
+      // Reset editor to original value first
+      editorRef.current.innerHTML = currentValue;
+      
+      // Apply styling to the generated text
+      const styledSpan = document.createElement('span');
+      styledSpan.style.cssText = 'text-decoration: underline; text-decoration-color: rgba(139, 92, 246, 0.5); text-underline-offset: 2px; background-color: rgba(139, 92, 246, 0.1); padding: 2px 4px; border-radius: 2px;';
+      styledSpan.textContent = mockGeneratedText;
+      
+      if (capturedSelectedText) {
+        // Get the selected HTML content from the range
+        const selectedContent = capturedSelectedText;
+        
+        // Create the styled HTML for the AI-generated text
+        const styledHTML = `<span style="text-decoration: underline; text-decoration-color: rgba(139, 92, 246, 0.5); text-underline-offset: 2px; background-color: rgba(139, 92, 246, 0.1); padding: 2px 4px; border-radius: 2px;">${mockGeneratedText}</span>`;
+        
+        // Replace the selected text in the original value with the AI-generated text
+        const modifiedValue = currentValue.replace(selectedContent, styledHTML);
+        
+        // Update the editor with the modified value
+        editorRef.current.innerHTML = modifiedValue;
+      } else {
+        // If no selection, replace entire content
+        editorRef.current.innerHTML = '<p><span style="text-decoration: underline; text-decoration-color: rgba(139, 92, 246, 0.5); text-underline-offset: 2px; background-color: rgba(139, 92, 246, 0.1); padding: 2px 4px; border-radius: 2px;">' + mockGeneratedText + '</span></p>';
+      }
+      
+      // Update the value with the new content
+      const newValue = editorRef.current.innerHTML;
+      lastValue.current = newValue;
+      isInternalUpdate.current = true;
+      onChange(newValue);
+      
       setIsThinking(false);
       setShowActions(true);
-    }, 3000);
+    }, 1000);
   };
 
   const handleValidate = () => {
-    // Keep the generated text
+    // Remove the styling wrapper from the span elements
+    if (editorRef.current) {
+      const spans = editorRef.current.querySelectorAll('span[style*="text-decoration: underline"]');
+      spans.forEach(span => {
+        const textNode = document.createTextNode(span.textContent || '');
+        span.parentNode?.replaceChild(textNode, span);
+      });
+      const newValue = editorRef.current.innerHTML;
+      lastValue.current = newValue;
+      onChange(newValue);
+    }
     setShowActions(false);
-    setGeneratedText('');
     setOriginalValue('');
+    setSelectionRange(null);
+    setSelectedText('');
   };
 
   const handleRevert = () => {
     // Revert to original value
+    if (editorRef.current) {
+      editorRef.current.innerHTML = originalValue;
+    }
+    lastValue.current = originalValue;
     onChange(originalValue);
     setShowActions(false);
-    setGeneratedText('');
     setOriginalValue('');
+    setSelectionRange(null);
+    setSelectedText('');
   };
 
   const isEmpty = !value || value.trim() === '' || value === '<br>';
@@ -181,7 +303,7 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
           <button
             type="button"
             onClick={handleHelpClick}
-            className="absolute left-4 bottom-3 transition-opacity hover:opacity-80 flex items-center gap-1.5 text-sm underline"
+            className="hover:cursor-pointer absolute left-4 bottom-3 transition-opacity hover:opacity-80 flex items-center gap-1.5 text-sm underline"
             style={{ 
               pointerEvents: 'auto',
               background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
@@ -190,8 +312,8 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
               backgroundClip: 'text'
             }}
           >
-            <Sparkles className="w-3.5 h-3.5" style={{ color: '#8b5cf6' }} />
-            Help me generate or improve a description
+            <Sparkles className="w-3.5 h-3.5 " style={{ color: '#8b5cf6' }} />
+            {hasSelection ? 'Improve the text selection' : 'Help me generate or improve a description'}
           </button>
         )}
         {isThinking && (
