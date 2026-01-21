@@ -79,8 +79,19 @@ function transformPOIData(rawData: unknown): POI[] {
     }
 
     const transformedPOIs = features.map((feature, index) => {
-      const id = feature.id?.toString() || feature.refid?.toString() || `poi-${index}`;
-      const name = feature.title || `POI #${id}`;
+      // Handle the nested structure from fetchAllPOIData: {p: {...poiData}, feature: {...geoJSON}}
+      const poiData = (feature as any).p || feature;
+      const geoFeature = (feature as any).feature || feature.feature;
+      
+      const id = poiData.id?.toString() || poiData.refid?.toString() || `poi-${index}`;
+      
+      // Try to get the name from multiple possible locations
+      const name = poiData.title 
+        || poiData.name 
+        || poiData.properties?.title 
+        || poiData.properties?.name 
+        || poiData.abstract
+        || `Unnamed POI ${id}`;
       
       // Determine category based on available data
       // This is a simple heuristic - adjust based on your needs
@@ -98,7 +109,7 @@ function transformPOIData(rawData: unknown): POI[] {
         reviewStatus: 'approved' as const,
         category,
         season: 'all-year' as const,
-        feature: feature.feature
+        feature: geoFeature
       };
     });
 

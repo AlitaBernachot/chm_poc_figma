@@ -432,11 +432,13 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
   useEffect(() => {
     if (selectedPOI && selectedPOI !== 'new') {
       const currentPoi = pois.find(poi => poi.id === selectedPOI);
+      console.log('Loading POI data:', { selectedPOI, currentPoi, name: currentPoi?.name });
       if (currentPoi && currentPoi.name) {
         setEnglishTitle(currentPoi.name);
       }
-    } else {
-      // Clear form when creating new POI
+      // Don't clear the title if POI exists but name is empty - keep existing title
+    } else if (selectedPOI === 'new') {
+      // Only clear form when explicitly creating new POI
       setEnglishTitle("");
     }
   }, [selectedPOI, pois]);
