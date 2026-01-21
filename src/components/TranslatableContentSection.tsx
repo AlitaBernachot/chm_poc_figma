@@ -49,13 +49,13 @@ interface TranslatableContentSectionProps {
   onUpdateCustomFieldLabel: (id: number, newLabel: string) => void;
   onEditingCustomFieldIdChange: (id: number | null) => void;
 
-  // French (Main Language)
+  // French 
   frenchTitle: string;
   frenchDescription: string;
   onFrenchTitleChange: (value: string) => void;
   onFrenchDescriptionChange: (value: string) => void;
 
-  // English Translation
+  // English Translation (Main Language)
   isEnglishExpanded: boolean;
   englishTitle: string;
   englishDescription: string;
@@ -110,6 +110,7 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
   frenchDescription,
   onFrenchTitleChange,
   onFrenchDescriptionChange,
+  isFrenchExpanded,
   isEnglishExpanded,
   englishTitle,
   englishDescription,
@@ -233,11 +234,11 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
       {/* Conditional rendering based on view mode */}
       {translationViewMode === "accordion" ? (
         <div className="space-y-6">
-          {/* German (Main Language) - Always Open */}
+          {/* English (Main Language) - Always Open */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-3">
               <h3 className="text-base font-bold text-gray-700">
-                German (Main)
+                English (Main)
               </h3>
               <Pin className="w-4 h-4 text-gray-500" />
             </div>
@@ -248,8 +249,8 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
               </label>
               <input
                 type="text"
-                value={germanTitle}
-                onChange={(e) => onGermanTitleChange(e.target.value)}
+                value={englishTitle}
+                onChange={(e) => onEnglishTitleChange(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 placeholder="Untitled"
               />
@@ -260,25 +261,25 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 Description
               </label>
               <RichTextEditor
-                value={germanDescription}
-                onChange={onGermanDescriptionChange}
+                value={englishDescription}
+                onChange={onEnglishDescriptionChange}
                 placeholder=""
                 showAiButton={showAiButtons}
                 onAiGenerate={() =>
                   console.log(
-                    "AI Generate German Description",
+                    "AI Generate English Description",
                   )
                 }
                 showHelpLink={showAiButtons}
                 onHelpClick={() =>
                   console.log(
-                    "Help generate German description",
+                    "Help generate English description",
                   )
                 }
               />
             </div>
 
-            {/* Custom Fields for German */}
+            {/* Custom Fields for English */}
             {customFields.map((field) => (
               <div key={field.id} className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -340,14 +341,14 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   French (Translation)
                 </h3>
               </div>
-              {isEnglishExpanded ? (
+              {isFrenchExpanded ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
               ) : (
                 <ChevronDown className="w-5 h-5 text-gray-500" />
               )}
             </button>
 
-            {isEnglishExpanded && (
+            {isFrenchExpanded && (
               <div className="space-y-4 mt-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -429,25 +430,25 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
             )}
           </div>
 
-          {/* English Translation - Collapsible */}
+          {/* German Translation - Collapsible */}
           <div className="pt-4 border-t border-gray-200">
             <button
-              onClick={() => onOpenLanguage("english")}
+              onClick={() => onOpenLanguage("german")}
               className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded transition-colors"
             >
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-gray-700">
-                  English (Translation)
+                  German (Translation)
                 </h3>
               </div>
-              {isEnglishExpanded ? (
+              {isGermanExpanded ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
               ) : (
                 <ChevronDown className="w-5 h-5 text-gray-500" />
               )}
             </button>
 
-            {isEnglishExpanded && (
+            {isGermanExpanded && (
               <div className="space-y-4 mt-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -455,10 +456,10 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   </label>
                   <input
                     type="text"
-                    value={englishTitle}
-                    onChange={(e) => onEnglishTitleChange(e.target.value)}
+                    value={germanTitle}
+                    onChange={(e) => onGermanTitleChange(e.target.value)}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    placeholder="Enter English title..."
+                    placeholder="Enter German title..."
                   />
                 </div>
 
@@ -467,25 +468,25 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                     Description
                   </label>
                   <RichTextEditor
-                    value={englishDescription}
-                    onChange={onEnglishDescriptionChange}
-                    placeholder="Enter English description..."
+                    value={germanDescription}
+                    onChange={onGermanDescriptionChange}
+                    placeholder="Enter German description..."
                     showAiButton={showAiButtons}
                     onAiGenerate={() =>
                       console.log(
-                        "AI Generate English Description",
+                        "AI Generate German Description",
                       )
                     }
                     showHelpLink={showAiButtons}
                     onHelpClick={() =>
                       console.log(
-                        "Help generate English description",
+                        "Help generate German description",
                       )
                     }
                   />
                 </div>
 
-                {/* Custom Fields for English */}
+                {/* Custom Fields for German */}
                 {customFields.map((field) => (
                   <div key={`en-${field.id}`}>
                     <div className="flex items-center gap-2 mb-2">

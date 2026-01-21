@@ -324,6 +324,8 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
   const [mapFilterStatus, setMapFilterStatus] = useState<string>("all");
   const [mapFilterSeason, setMapFilterSeason] = useState<string>("all");
   
+  const [isFrenchExpanded, setIsFrenchExpanded] =
+    useState(false);
   const [isEnglishExpanded, setIsEnglishExpanded] =
     useState(false);
   const [isGermanExpanded, setIsGermanExpanded] =
@@ -781,6 +783,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
       setOtherLanguagesDescriptions(newOtherDescriptions);
 
       // Auto-expand all translation sections to show the results
+      setIsFrenchExpanded(true);
       setIsEnglishExpanded(true);
       setIsGermanExpanded(true);
       setAdditionalLanguages(
@@ -867,8 +870,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
     // Expand the language
     setTimeout(() => {
       if (language === "french") {
-        // French is always visible, just scroll to it
-        // No expansion needed
+        setIsFrenchExpanded(true);
       } else if (language === "english") {
         setIsEnglishExpanded(true);
       } else if (language === "german") {
@@ -883,7 +885,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
           ),
         );
       }
-    }, 300); // Delay to allow scroll animation to start
+    }, 200); // Delay to allow scroll animation to start
   };
 
   const addCustomField = () => {
@@ -1655,13 +1657,13 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                         "#fef2f2")
                     }
                   >
-                    DE
+                    EN
                   </button>
                   <button
-                    onClick={() => openLanguage("english")}
+                    onClick={() => openLanguage("german")}
                     className="px-2 py-1 text-xs bg-gray-50 text-gray-700 hover:bg-gray-100 rounded transition-colors font-medium flex items-center gap-1"
                   >
-                    EN
+                    DE
                   </button>
                   <button
                     onClick={() => openLanguage("french")}
@@ -1698,6 +1700,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                 onRemoveCustomField={removeCustomField}
                 onUpdateCustomFieldLabel={updateCustomFieldLabel}
                 onEditingCustomFieldIdChange={setEditingCustomFieldId}
+                isFrenchExpanded={isFrenchExpanded}
                 frenchTitle={frenchTitle}
                 frenchDescription={frenchDescription}
                 onFrenchTitleChange={setFrenchTitle}

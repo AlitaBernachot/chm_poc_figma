@@ -156,7 +156,7 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
             ref={editorRef}
             contentEditable
             onInput={handleInput}
-            className="px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+            className="px-4 pt-3 pb-14 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
             data-placeholder={placeholder}
             style={{
               whiteSpace: 'pre-wrap',
@@ -177,7 +177,7 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
             }}
           />
         )}
-        {showHelpLink && onHelpClick && isEmpty && !isThinking && !showActions && (
+        {showHelpLink && onHelpClick && !isThinking && !showActions && (
           <button
             type="button"
             onClick={handleHelpClick}

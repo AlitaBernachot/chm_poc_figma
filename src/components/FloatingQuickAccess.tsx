@@ -73,6 +73,18 @@ export function FloatingQuickAccess({
                 <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Languages
                 </div>
+
+                <button
+                  onClick={() => {
+                    openLanguage("english");
+                    setIsOpen(false);
+                    setIsLanguageSubmenuOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  English (Main)
+                </button>
+
                 <button
                   onClick={() => {
                     openLanguage("german");
@@ -81,7 +93,7 @@ export function FloatingQuickAccess({
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  German (Main)
+                  German
                 </button>
                 
                 <button
@@ -93,17 +105,6 @@ export function FloatingQuickAccess({
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   French
-                </button>
-
-                <button
-                  onClick={() => {
-                    openLanguage("english");
-                    setIsOpen(false);
-                    setIsLanguageSubmenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  English
                 </button>
 
                 {additionalLanguages.map((language) => (
