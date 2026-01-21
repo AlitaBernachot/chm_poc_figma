@@ -29,7 +29,7 @@ interface GeoJSONResponse {
  */
 export async function fetchPOIClusterIds(
   url: string = 'https://data.schweizmobil.ch/poi-clusters-prod/21781/clustered_Sightseeing.geojson'
-): Promise<number[]> {
+): Promise<GeoJSONFeature[]> {
   try {
     const response = await fetch(url);
     
@@ -40,14 +40,14 @@ export async function fetchPOIClusterIds(
     const data: GeoJSONResponse = await response.json();
     
     // Extract all IDs from features
-    const ids = data.features.slice(0, 200).map(feature => feature.id);
+    const pois = data.features.slice(0, 100)//.map(feature => feature.id);
 
     // ONLY get 200 for testing, otherwise too many requests and app is slow
     
-    console.log(`Extracted ${ids.length} POI cluster IDs`);
-    return ids;
+    console.log(`Extracted ${pois.length} POI cluster POIs`);
+    return pois;
   } catch (error) {
-    console.error('Error fetching POI cluster IDs:', error);
+    console.error('Error fetching clusteres POIs:', error);
     throw error;
   }
 }
@@ -96,10 +96,15 @@ export async function fetchAllPOIData(
 ): Promise<unknown> {
   try {
     // Step 1: Fetch cluster IDs
-    const ids = await fetchPOIClusterIds(clusterUrl);
+    const clusteredPois = await fetchPOIClusterIds(clusterUrl);
     
     // Step 2: Fetch details for all IDs
-    const details = await fetchPOIDetails(ids, lang);
+    const details = await fetchPOIDetails(clusteredPois.map(feature => feature.id), lang);
+
+    if (Array.isArray(details)) {
+        const detailedPois = details.map(p => ({p, ...{feature: clusteredPois.find(cp => cp.id === p.id)}}))
+        return detailedPois
+    }
     
     return details;
   } catch (error) {

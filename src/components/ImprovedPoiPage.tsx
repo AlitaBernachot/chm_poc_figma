@@ -11,6 +11,7 @@ import { TechnicalDetailsSection } from "./TechnicalDetailsSection";
 import { TranslatableContentSection } from "./TranslatableContentSection";
 import { SecondaryToolbar } from "./SecondaryToolbar";
 import ImportPOIsScreen from "./ImportPOIsScreen";
+import { MapSection } from "./MapSection";
 import {
   Clock,
   Type,
@@ -386,7 +387,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
     useState(false);
   const [previewLanguage, setPreviewLanguage] = useState<
     "french" | "english" | "german"
-  >("french");
+  >("english");
   const [selectedCategory, setSelectedCategory] =
     useState("poi");
   const [selectedTags, setSelectedTags] = useState<string[]>([
@@ -432,11 +433,11 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
     if (selectedPOI && selectedPOI !== 'new') {
       const currentPoi = pois.find(poi => poi.id === selectedPOI);
       if (currentPoi && currentPoi.name) {
-        setGermanTitle(currentPoi.name);
+        setEnglishTitle(currentPoi.name);
       }
     } else {
       // Clear form when creating new POI
-      setGermanTitle("");
+      setEnglishTitle("");
     }
   }, [selectedPOI, pois]);
   
@@ -1798,7 +1799,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                 <div className="space-y-6">
                   {/* Map Section */}
                   <div className="bg-white rounded shadow border border-gray-200 overflow-hidden relative">
-                    <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+                    <div className="absolute top-3 right-14 z-10 flex items-center gap-2">
                       {/* Toggle Switch for Show All Routes on Map */}
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-700 font-medium">Show all routes</span>
@@ -1826,11 +1827,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                       </button>
                     </div>
                     <div className="h-full min-h-[500px] bg-green-100 relative">
-                      <img
-                        src={mapImage}
-                        alt="Map view"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
+                      <MapSection pois={pois} selectedPoiId={selectedPOI} selectedIcon={selectedIcon} iconColor={iconColor} />
 
                       {/* Routes on Map */}
                       {(showRoutesOnMap || visibleRoutesOnMap.length > 0) && (
@@ -1886,27 +1883,30 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                         </>
                       )}
 
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center bg-white/90 backdrop-blur-sm rounded p-6 shadow-lg border border-gray-200">
-                          <MapPin className="w-10 h-10 text-red-500 mx-auto mb-2" />
-                          {germanTitle && (
-                            <h2 className="text-xl font-bold text-gray-900 mb-3">
-                              {germanTitle}
-                            </h2>
-                          )}
-                          <h3 className="text-lg font-bold text-gray-800 mb-1">
-                            Click to set location
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Place the POI on the map
-                          </p>
-                          {(showRoutesOnMap || visibleRoutesOnMap.length > 0) && (
-                            <p className="text-xs text-green-600 font-semibold mt-2">
-                              ✓ {showRoutesOnMap ? "All routes" : `${visibleRoutesOnMap.length} route${visibleRoutesOnMap.length !== 1 ? 's' : ''}`} displayed on map
+                      {/* Only show "Click to set location" if POI doesn't have a feature */}
+                      {!pois.find(poi => poi.id === selectedPOI)?.feature && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center bg-white/90 backdrop-blur-sm rounded p-6 shadow-lg border border-gray-200">
+                            <MapPin className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                            {germanTitle && (
+                              <h2 className="text-xl font-bold text-gray-900 mb-3">
+                                {germanTitle}
+                              </h2>
+                            )}
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">
+                              Click to set location
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              Place the POI on the map
                             </p>
-                          )}
+                            {(showRoutesOnMap || visibleRoutesOnMap.length > 0) && (
+                              <p className="text-xs text-green-600 font-semibold mt-2">
+                                ✓ {showRoutesOnMap ? "All routes" : `${visibleRoutesOnMap.length} route${visibleRoutesOnMap.length !== 1 ? 's' : ''}`} displayed on map
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
 
@@ -2630,7 +2630,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
               <div className="flex items-center gap-3">
                 <MapPin className="w-6 h-6 text-blue-600" />
                 <h2 className="text-lg font-bold text-gray-800">
-                  Preview - <i>Untitled</i>
+                  Map preview - <i>{englishTitle || 'Untitled'}</i>
                 </h2>
               </div>
               <div className="flex items-center gap-3">
@@ -2655,16 +2655,6 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                 {/* Language Switcher */}
                 <div className="flex items-center gap-2 bg-gray-100 rounded p-1">
                   <button
-                    onClick={() => setPreviewLanguage("french")}
-                    className={`px-3 py-1.5 text-sm rounded transition-colors flex items-center gap-1.5 ${
-                      previewLanguage === "french"
-                        ? "bg-orange-500 text-white font-semibold shadow-sm"
-                        : "text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    🇫🇷 French
-                  </button>
-                  <button
                     onClick={() =>
                       setPreviewLanguage("english")
                     }
@@ -2674,7 +2664,17 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                         : "text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    🇬🇧 English
+                    English
+                  </button>
+                  <button
+                    onClick={() => setPreviewLanguage("french")}
+                    className={`px-3 py-1.5 text-sm rounded transition-colors flex items-center gap-1.5 ${
+                      previewLanguage === "french"
+                        ? "bg-orange-500 text-white font-semibold shadow-sm"
+                        : "text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    French
                   </button>
                   <button
                     onClick={() => setPreviewLanguage("german")}
@@ -2684,7 +2684,7 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                         : "text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    🇩🇪 German
+                    German
                   </button>
                 </div>
                 <button

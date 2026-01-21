@@ -248,7 +248,7 @@ export function SecondaryToolbar({
           className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-50 border border-blue-300 hover:bg-blue-100 text-blue-700 rounded font-semibold transition-colors shadow-sm"
         >
           <MapPin className="w-4 h-4" />
-          Preview on a map
+          Map preview
         </button>
 
         <div className="relative">

@@ -12,6 +12,15 @@ export interface POI {
   reviewStatus?: "review-required" | "approved" | "pending";
   category?: string;
   season?: "summer" | "winter" | "all-year";
+  feature?: {
+    type: string;
+    geometry: {
+      type: string;
+      coordinates: number[];
+    };
+    properties?: Record<string, unknown>;
+    id?: number;
+  };
 }
 
 /**
@@ -89,6 +98,7 @@ function transformPOIData(rawData: unknown): POI[] {
         reviewStatus: 'approved' as const,
         category,
         season: 'all-year' as const,
+        feature: feature.feature
       };
     });
 
