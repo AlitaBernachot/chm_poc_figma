@@ -1,5 +1,6 @@
 import React from "react";
 import { RichTextEditor } from "./RichTextEditor";
+import { TextInputWithAI } from "./TextInputWithAI";
 import {
   Sparkles,
   Loader2,
@@ -276,12 +277,15 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Abstract
               </label>
-              <textarea
+              <TextInputWithAI
                 value={englishAbstract}
-                onChange={(e) => onEnglishAbstractChange(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                onChange={onEnglishAbstractChange}
                 placeholder="Enter English abstract..."
                 rows={3}
+                showAiButton={showAiButtons}
+                onAiGenerate={() => console.log("AI Generate English Abstract")}
+                showHelpLink={showAiButtons}
+                onHelpClick={() => console.log("Help generate English abstract")}
               />
             </div>
 
@@ -396,12 +400,15 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Abstract
                   </label>
-                  <textarea
+                  <TextInputWithAI
                     value={frenchAbstract}
-                    onChange={(e) => onFrenchAbstractChange(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                    onChange={onFrenchAbstractChange}
                     placeholder="Enter French abstract..."
                     rows={3}
+                    showAiButton={showAiButtons}
+                    onAiGenerate={() => console.log("AI Generate French Abstract")}
+                    showHelpLink={showAiButtons}
+                    onHelpClick={() => console.log("Help generate French abstract")}
                   />
                 </div>
 
@@ -509,12 +516,15 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Abstract
                   </label>
-                  <textarea
+                  <TextInputWithAI
                     value={germanAbstract}
-                    onChange={(e) => onGermanAbstractChange(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                    onChange={onGermanAbstractChange}
                     placeholder="Enter German abstract..."
                     rows={3}
+                    showAiButton={showAiButtons}
+                    onAiGenerate={() => console.log("AI Generate German Abstract")}
+                    showHelpLink={showAiButtons}
+                    onHelpClick={() => console.log("Help generate German abstract")}
                   />
                 </div>
 
