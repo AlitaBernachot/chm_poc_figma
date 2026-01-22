@@ -6,12 +6,22 @@ import { fetchAllPOIData } from './poiData';
 export interface POI {
   id: string;
   name: string;
+  url?: string;
   status: "draft" | "published";
   hasLocation: boolean;
   lastUpdated?: string;
   reviewStatus?: "review-required" | "approved" | "pending";
   category?: string;
   season?: "summer" | "winter" | "all-year";
+  addressCity?: string;
+  addressEmail?: string;
+  addressName?: string;
+  addressName2?: string;
+  addressPhone?: string;
+  addressStreet?: string;
+  addressUrl?: string;
+  addressZip?: string;
+  photos?: { url: string; alt: string; author?: string; copyright?: string }[];
   feature?: {
     type: string;
     geometry: {
@@ -21,7 +31,6 @@ export interface POI {
     properties?: Record<string, unknown>;
     id?: number;
   };
-  photos?: { url: string; alt: string; author?: string; copyright?: string }[];
 }
 
 /**
@@ -101,28 +110,20 @@ function transformPOIData(rawData: unknown): POI[] {
         || poiData.properties?.website
         || '';
 
-      // Map gallery to photos array
-      let photos: { url: string; alt: string; author?: string; copyright?: string }[] = [];
-      if (Array.isArray(poiData.gallery)) {
-        photos = poiData.gallery.map((img: any, idx: number) => ({
-          url: img.srcBig || img.src,
-          alt: img.abstract || name || `Photo ${idx + 1}`,
-          author: img.author,
-          copyright: img.copyright,
-        }));
-      } else if (poiData.photoBig || poiData.photo) {
-        photos = [{
-          url: poiData.photoBig || poiData.photo,
-          alt: name || 'Photo',
-        }];
-      }
-
       // Determine category based on available data
       // This is a simple heuristic - adjust based on your needs
       const category = 'poi'; // Default category, could be enhanced with mapping logic
 
       // Determine if location exists (most POIs from API should have location)
       const hasLocation = true;
+
+      // Extract gallery photos
+      const photos = poiData.gallery?.map((img: any) => ({
+        url: img.srcBig || img.src,
+        alt: img.abstract || name,
+        author: img.author,
+        copyright: img.copyright
+      })) || (poiData.photo ? [{ url: poiData.photo, alt: name }] : []);
 
       return {
         id,
@@ -134,8 +135,16 @@ function transformPOIData(rawData: unknown): POI[] {
         reviewStatus: 'approved' as const,
         category,
         season: 'all-year' as const,
-        feature: geoFeature,
+        addressCity: poiData.addressCity,
+        addressEmail: poiData.addressEmail,
+        addressName: poiData.addressName,
+        addressName2: poiData.addressName2,
+        addressPhone: poiData.addressPhone,
+        addressStreet: poiData.addressStreet,
+        addressUrl: poiData.addressUrl,
+        addressZip: poiData.addressZip,
         photos,
+        feature: geoFeature
       };
     });
 

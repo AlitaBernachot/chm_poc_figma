@@ -248,7 +248,7 @@ const categories = [
   },
   { value: "kids", label: "For the Kids", icon: Baby },
   { value: "natural", label: "Natural Sights", icon: Mountain },
-  { value: "poi", label: "Points of Interest", icon: Landmark },
+  { value: "poi", label: "Points of Interest -- [Editable details]", icon: Landmark },
   {
     value: "food",
     label: "Food and Drink -- [Editable details]",
@@ -448,12 +448,32 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
         setPhotos(galleryPhotos);
         setNextPhotoId(galleryPhotos.length + 1);
       }
+      
+      // Load address fields for POI
+      if (currentPoi) {
+        setPoiAddressCity(currentPoi.addressCity || "");
+        setPoiAddressEmail(currentPoi.addressEmail || "");
+        setPoiAddressName(currentPoi.addressName || "");
+        setPoiAddressName2(currentPoi.addressName2 || "");
+        setPoiAddressPhone(currentPoi.addressPhone || "");
+        setPoiAddressStreet(currentPoi.addressStreet || "");
+        setPoiAddressUrl(currentPoi.addressUrl || "");
+        setPoiAddressZip(currentPoi.addressZip || "");
+      }
       // Don't clear the title if POI exists but name is empty - keep existing title
     } else if (selectedPOI === 'new') {
       // Only clear form when explicitly creating new POI
       setEnglishTitle("");
       setPhotos([]);
       setNextPhotoId(1);
+      setPoiAddressCity("");
+      setPoiAddressEmail("");
+      setPoiAddressName("");
+      setPoiAddressName2("");
+      setPoiAddressPhone("");
+      setPoiAddressStreet("");
+      setPoiAddressUrl("");
+      setPoiAddressZip("");
     }
   }, [selectedPOI, pois]);
   
@@ -517,6 +537,15 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
   const [foodOpenHours, setFoodOpenHours] = useState("");
   const [foodUrl, setFoodUrl] = useState("");
   const [foodTitle, setFoodTitle] = useState("");
+  // POI address fields
+  const [poiAddressCity, setPoiAddressCity] = useState("");
+  const [poiAddressEmail, setPoiAddressEmail] = useState("");
+  const [poiAddressName, setPoiAddressName] = useState("");
+  const [poiAddressName2, setPoiAddressName2] = useState("");
+  const [poiAddressPhone, setPoiAddressPhone] = useState("");
+  const [poiAddressStreet, setPoiAddressStreet] = useState("");
+  const [poiAddressUrl, setPoiAddressUrl] = useState("");
+  const [poiAddressZip, setPoiAddressZip] = useState("");
   const [photos, setPhotos] = useState<
     { id: number; url: string; alt: string; isAiGenerated?: boolean }[]
   >([
@@ -2478,6 +2507,149 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
                         Link to the restaurant's website, menu, or booking page
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Points of Interest Details Section - Only shown when poi category is selected */}
+              {selectedCategory === "poi" && (
+                <div
+                  id="poi-details-section"
+                  className="bg-white rounded shadow p-6 border border-gray-200 scroll-mt-6"
+                >
+                  <h2 className="text-lg font-bold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+                    <Landmark className="w-5 h-5 inline-block mr-2 text-gray-700" />
+                    Point of Interest Details
+                  </h2>
+
+                  <div className="space-y-4">
+                    {/* Name */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        value={poiAddressName}
+                        onChange={(e) => setPoiAddressName(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g., Tourist Office, Museum..."
+                      />
+                    </div>
+
+                    {/* Name 2 */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Additional Name
+                      </label>
+                      <input
+                        type="text"
+                        value={poiAddressName2}
+                        onChange={(e) => setPoiAddressName2(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder="Secondary name or subtitle"
+                      />
+                    </div>
+
+                    {/* Street Address */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Street Address
+                      </label>
+                      <input
+                        type="text"
+                        value={poiAddressStreet}
+                        onChange={(e) => setPoiAddressStreet(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g., Bahnhofstrasse 10"
+                      />
+                    </div>
+
+                    {/* City and Zip */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Zip Code
+                        </label>
+                        <input
+                          type="text"
+                          value={poiAddressZip}
+                          onChange={(e) => setPoiAddressZip(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                          placeholder="e.g., 8001"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          value={poiAddressCity}
+                          onChange={(e) => setPoiAddressCity(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                          placeholder="e.g., Zürich"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={poiAddressPhone}
+                        onChange={(e) => setPoiAddressPhone(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g., +41 44 123 45 67"
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={poiAddressEmail}
+                        onChange={(e) => setPoiAddressEmail(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g., welcome@example.ch"
+                      />
+                    </div>
+
+                    {/* Website URL */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Website URL
+                      </label>
+                      <div className="flex gap-2 items-start">
+                        <input
+                          type="url"
+                          value={poiAddressUrl}
+                          onChange={(e) => setPoiAddressUrl(e.target.value)}
+                          className="flex-1 px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                          placeholder="https://..."
+                        />
+                        {poiAddressUrl && (
+                          <a
+                            href={poiAddressUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded transition-colors flex items-center gap-2"
+                            title="Open website"
+                          >
+                            <ExternalLink className="w-4 h-4 text-gray-700" />
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Link to the official website
                       </p>
                     </div>
                   </div>

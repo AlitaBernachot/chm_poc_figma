@@ -328,6 +328,14 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
                             → Go to Food & Drink Details
                           </button>
                         )}
+                        {selectedCategory === "poi" && (
+                          <button
+                            onClick={() => onScrollToSection("poi-details-section")}
+                            className="text-xs text-blue-600 hover:text-blue-700 underline mt-1"
+                          >
+                            → Go to Point of Interest Details
+                          </button>
+                        )}
                       </div>
                     </>
                   );
@@ -400,19 +408,6 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
                 <span className="text-xs text-gray-700 font-medium">All Year</span>
               </button>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              URL
-            </label>
-            <input
-              type="url"
-              value={url}
-              onChange={e => onUrlChange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="https://..."
-            />
           </div>
 
           {/* Custom Icon Section */}
