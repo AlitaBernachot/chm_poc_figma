@@ -436,10 +436,24 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
       if (currentPoi && currentPoi.name) {
         setEnglishTitle(currentPoi.name);
       }
+      
+      // Load gallery photos into the photos state
+      if (currentPoi && currentPoi.photos && currentPoi.photos.length > 0) {
+        const galleryPhotos = currentPoi.photos.map((photo, index) => ({
+          id: index + 1,
+          url: photo.url,
+          alt: photo.alt || `Photo ${index + 1}`,
+          isAiGenerated: false,
+        }));
+        setPhotos(galleryPhotos);
+        setNextPhotoId(galleryPhotos.length + 1);
+      }
       // Don't clear the title if POI exists but name is empty - keep existing title
     } else if (selectedPOI === 'new') {
       // Only clear form when explicitly creating new POI
       setEnglishTitle("");
+      setPhotos([]);
+      setNextPhotoId(1);
     }
   }, [selectedPOI, pois]);
   
@@ -1746,56 +1760,69 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                 className="grid grid-cols-2 gap-6 scroll-mt-6"
               >
                 {/* Technical Details */}
-                <TechnicalDetailsSection
-                  poiTitle={germanTitle}
-                  categories={categories}
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={setSelectedCategory}
-                  onScrollToSection={scrollToSection}
-                  selectedIcon={selectedIcon}
-                  iconColor={iconColor}
-                  customIconUrl={customIconUrl}
-                  showIconDropdown={showIconDropdown}
-                  onIconChange={setSelectedIcon}
-                  onIconColorChange={setIconColor}
-                  onCustomIconUrlChange={setCustomIconUrl}
-                  onToggleIconDropdown={setShowIconDropdown}
-                  latitude={latitude}
-                  longitude={longitude}
-                  onLatitudeChange={setLatitude}
-                  onLongitudeChange={setLongitude}
-                  onCopyCoordinates={copyCoordinates}
-                  defaultTags={defaultTags}
-                  selectedTags={selectedTags}
-                  customTags={customTags}
-                  aiGeneratedTags={aiGeneratedTags}
-                  aiSuggestedRemoveTags={aiSuggestedRemoveTags}
-                  isAiGeneratingTags={isAiGeneratingTags}
-                  showValidateButton={showValidateButton}
-                  newTagInput={newTagInput}
-                  showTagInput={showTagInput}
-                  onToggleTag={toggleTag}
-                  onAddCustomTag={addCustomTag}
-                  onRemoveCustomTag={removeCustomTag}
-                  onHandleAiGenerateTags={handleAiGenerateTags}
-                  onValidateAiTags={validateAiTags}
-                  onCancelAiTags={cancelAiTags}
-                  onNewTagInputChange={setNewTagInput}
-                  onShowTagInputChange={setShowTagInput}
-                  photos={photos}
-                  isThinkingPicture={isThinkingPicture}
-                  showPictureActions={showPictureActions}
-                  onAiPictureGenerator={handleAiPictureGenerator}
-                  onValidatePictures={handleValidatePictures}
-                  onCancelPictures={handleCancelPictures}
-                  onAiPhotoClick={handleAiPhotoClick}
-                  onMovePhoto={movePhoto}
-                  onRemovePhoto={removePhoto}
-                  technicalCustomFields={technicalCustomFields}
-                  onAddTechnicalCustomField={addTechnicalCustomField}
-                  onRemoveTechnicalCustomField={removeTechnicalCustomField}
-                  showAiButtons={showAiButtons}
-                />
+                {/* Technical DetailsSection block - wrapped in fragment to fix JSX error */}
+                <>
+                  {(() => {
+                    const currentPoi = pois.find(poi => poi.id === selectedPOI);
+                    return (
+                      <TechnicalDetailsSection
+                        poiTitle={germanTitle}
+                        url={currentPoi?.url || ""}
+                        onUrlChange={newUrl => {
+                          setPois(prev => prev.map(poi => poi.id === selectedPOI ? { ...poi, url: newUrl } : poi));
+                        }}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        onCategoryChange={setSelectedCategory}
+                        onScrollToSection={scrollToSection}
+                        selectedIcon={selectedIcon}
+                        iconColor={iconColor}
+                        customIconUrl={customIconUrl}
+                        showIconDropdown={showIconDropdown}
+                        onIconChange={setSelectedIcon}
+                        onIconColorChange={setIconColor}
+                        onCustomIconUrlChange={setCustomIconUrl}
+                        onToggleIconDropdown={setShowIconDropdown}
+                        latitude={latitude}
+                        longitude={longitude}
+                        onLatitudeChange={setLatitude}
+                        onLongitudeChange={setLongitude}
+                        onCopyCoordinates={copyCoordinates}
+                        defaultTags={defaultTags}
+                        selectedTags={selectedTags}
+                        customTags={customTags}
+                        aiGeneratedTags={aiGeneratedTags}
+                        aiSuggestedRemoveTags={aiSuggestedRemoveTags}
+                        isAiGeneratingTags={isAiGeneratingTags}
+                        showValidateButton={showValidateButton}
+                        newTagInput={newTagInput}
+                        showTagInput={showTagInput}
+                        onToggleTag={toggleTag}
+                        onAddCustomTag={addCustomTag}
+                        onRemoveCustomTag={removeCustomTag}
+                        onHandleAiGenerateTags={handleAiGenerateTags}
+                        onValidateAiTags={validateAiTags}
+                        onCancelAiTags={cancelAiTags}
+                        onNewTagInputChange={setNewTagInput}
+                        onShowTagInputChange={setShowTagInput}
+                        photos={photos}
+                        isThinkingPicture={isThinkingPicture}
+                        showPictureActions={showPictureActions}
+                        onAiPictureGenerator={handleAiPictureGenerator}
+                        onValidatePictures={handleValidatePictures}
+                        onCancelPictures={handleCancelPictures}
+                        onAiPhotoClick={handleAiPhotoClick}
+                        onMovePhoto={movePhoto}
+                        onRemovePhoto={removePhoto}
+                        technicalCustomFields={technicalCustomFields}
+                        onAddTechnicalCustomField={addTechnicalCustomField}
+                        onRemoveTechnicalCustomField={removeTechnicalCustomField}
+                        showAiButtons={showAiButtons}
+                        galleryPhotos={currentPoi?.photos}
+                      />
+                    );
+                  })()}
+                </>
 
                 {/* Map and Associated Routes Column */}
                 <div className="space-y-6">

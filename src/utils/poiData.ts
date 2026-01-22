@@ -64,7 +64,7 @@ export async function fetchPOIDetails(
 ): Promise<unknown> {
   try {
     const idsString = ids.join(',');
-    const url = `https://dev.schweizmobil.ch/api/4/feature/sightseeing/${idsString}?lang=${lang}`;
+    const url = `https://int.schweizmobil.ch/api/4/feature/sightseeing/${idsString}?lang=${lang}`;
     
     console.log(`Fetching POI details for ${ids.length} IDs...`);
     

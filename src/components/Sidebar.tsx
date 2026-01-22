@@ -39,6 +39,7 @@ import toggleButtonImg from "figma:asset/46a386f5920c10a34be8f262c1ef2db5bfd254a
 interface POI {
   id: string;
   name: string;
+  url?: string;
   status: "draft" | "published";
   hasLocation: boolean;
 }

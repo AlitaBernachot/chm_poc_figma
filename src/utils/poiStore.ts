@@ -21,6 +21,7 @@ export interface POI {
     properties?: Record<string, unknown>;
     id?: number;
   };
+  photos?: { url: string; alt: string; author?: string; copyright?: string }[];
 }
 
 /**
@@ -82,9 +83,9 @@ function transformPOIData(rawData: unknown): POI[] {
       // Handle the nested structure from fetchAllPOIData: {p: {...poiData}, feature: {...geoJSON}}
       const poiData = (feature as any).p || feature;
       const geoFeature = (feature as any).feature || feature.feature;
-      
+
       const id = poiData.id?.toString() || poiData.refid?.toString() || `poi-${index}`;
-      
+
       // Try to get the name from multiple possible locations
       const name = poiData.title 
         || poiData.name 
@@ -92,24 +93,49 @@ function transformPOIData(rawData: unknown): POI[] {
         || poiData.properties?.name 
         || poiData.abstract
         || `Unnamed POI ${id}`;
-      
+
+      // Try to get the url from multiple possible locations
+      const url = poiData.url
+        || poiData.website
+        || poiData.properties?.url
+        || poiData.properties?.website
+        || '';
+
+      // Map gallery to photos array
+      let photos: { url: string; alt: string; author?: string; copyright?: string }[] = [];
+      if (Array.isArray(poiData.gallery)) {
+        photos = poiData.gallery.map((img: any, idx: number) => ({
+          url: img.srcBig || img.src,
+          alt: img.abstract || name || `Photo ${idx + 1}`,
+          author: img.author,
+          copyright: img.copyright,
+        }));
+      } else if (poiData.photoBig || poiData.photo) {
+        photos = [{
+          url: poiData.photoBig || poiData.photo,
+          alt: name || 'Photo',
+        }];
+      }
+
       // Determine category based on available data
       // This is a simple heuristic - adjust based on your needs
       const category = 'poi'; // Default category, could be enhanced with mapping logic
-      
+
       // Determine if location exists (most POIs from API should have location)
       const hasLocation = true;
-      
+
       return {
         id,
         name,
+        url,
         status: 'published' as const,
         hasLocation,
         lastUpdated: new Date().toISOString().split('T')[0],
         reviewStatus: 'approved' as const,
         category,
         season: 'all-year' as const,
-        feature: geoFeature
+        feature: geoFeature,
+        photos,
       };
     });
 

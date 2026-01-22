@@ -57,13 +57,13 @@ interface Tag {
 interface TechnicalDetailsSectionProps {
   // POI Info
   poiTitle?: string;
-  
+  url: string;
+  onUrlChange: (url: string) => void;
   // Category
   categories: Category[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onScrollToSection: (sectionId: string) => void;
-  
   // Icons
   selectedIcon: string;
   iconColor: string;
@@ -73,14 +73,12 @@ interface TechnicalDetailsSectionProps {
   onIconColorChange: (color: string) => void;
   onCustomIconUrlChange: (url: string) => void;
   onToggleIconDropdown: (show: boolean) => void;
-  
   // Coordinates
   latitude: string;
   longitude: string;
   onLatitudeChange: (lat: string) => void;
   onLongitudeChange: (lon: string) => void;
   onCopyCoordinates: () => void;
-  
   // Tags
   defaultTags: Tag[];
   selectedTags: string[];
@@ -99,8 +97,7 @@ interface TechnicalDetailsSectionProps {
   onCancelAiTags: () => void;
   onNewTagInputChange: (value: string) => void;
   onShowTagInputChange: (show: boolean) => void;
-  
-  // Photos
+  // Photos (editable state)
   photos: Photo[];
   isThinkingPicture: boolean;
   showPictureActions: boolean;
@@ -110,12 +107,12 @@ interface TechnicalDetailsSectionProps {
   onAiPhotoClick: (photoId: number) => void;
   onMovePhoto: (dragIndex: number, hoverIndex: number) => void;
   onRemovePhoto: (id: number) => void;
-  
+  // Gallery photos (from POI, for preview)
+  galleryPhotos?: { url: string; alt: string; author?: string; copyright?: string }[];
   // Technical Custom Fields
   technicalCustomFields: TechnicalField[];
   onAddTechnicalCustomField: () => void;
   onRemoveTechnicalCustomField: (id: number) => void;
-  
   // General
   showAiButtons: boolean;
 }
@@ -204,6 +201,8 @@ const DraggablePhoto = ({
 
 export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = ({
   poiTitle,
+  url,
+  onUrlChange,
   categories,
   selectedCategory,
   onCategoryChange,
@@ -251,16 +250,9 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
   onAddTechnicalCustomField,
   onRemoveTechnicalCustomField,
   showAiButtons,
+  galleryPhotos,
 }) => {
   const [selectedSeason, setSelectedSeason] = useState<string>("all"); // summer, winter, or all
-  
-  const toggleSeason = (season: string) => {
-    if (season === "all") {
-      setSelectedSeason("all");
-    } else {
-      setSelectedSeason(season);
-    }
-  };
   
   return (
     <DndProvider backend={HTML5Backend}>
@@ -416,6 +408,8 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
             </label>
             <input
               type="url"
+              value={url}
+              onChange={e => onUrlChange(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               placeholder="https://..."
             />
@@ -623,7 +617,7 @@ export const TechnicalDetailsSection: React.FC<TechnicalDetailsSectionProps> = (
             <input
               type="number"
               className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="450"
+              placeholder="eg. 450"
             />
           </div>
 
