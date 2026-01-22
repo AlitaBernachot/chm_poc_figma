@@ -1,6 +1,5 @@
 import React from "react";
 import { RichTextEditor } from "./RichTextEditor";
-import { TextInputWithAI } from "./TextInputWithAI";
 import {
   Sparkles,
   Loader2,
@@ -273,44 +272,37 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Abstract
-              </label>
-              <TextInputWithAI
-                value={englishAbstract}
-                onChange={onEnglishAbstractChange}
-                placeholder="Enter English abstract..."
-                rows={3}
-                showAiButton={showAiButtons}
-                onAiGenerate={() => console.log("AI Generate English Abstract")}
-                showHelpLink={showAiButtons}
-                onHelpClick={() => console.log("Help generate English abstract")}
-              />
-            </div>
+            <RichTextEditor
+              label="Abstract"
+              value={englishAbstract}
+              onChange={onEnglishAbstractChange}
+              placeholder="Enter English abstract..."
+              rows={3}
+              showAiButton={showAiButtons}
+              onAiGenerate={() => console.log("AI Generate English Abstract")}
+              showHelpLink={showAiButtons}
+              onHelpClick={() => console.log("Help generate English abstract")}
+              aiHelpText="Help me generate or improve an abstract"
+            />
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description
-              </label>
-              <RichTextEditor
-                value={englishDescription}
-                onChange={onEnglishDescriptionChange}
-                placeholder=""
-                showAiButton={showAiButtons}
-                onAiGenerate={() =>
-                  console.log(
-                    "AI Generate English Description",
-                  )
-                }
-                showHelpLink={showAiButtons}
-                onHelpClick={() =>
-                  console.log(
-                    "Help generate English description",
-                  )
-                }
-              />
-            </div>
+            <RichTextEditor
+              label="Description"
+              value={englishDescription}
+              onChange={onEnglishDescriptionChange}
+              placeholder=""
+              showAiButton={showAiButtons}
+              onAiGenerate={() =>
+                console.log(
+                  "AI Generate English Description",
+                )
+              }
+              showHelpLink={showAiButtons}
+              onHelpClick={() =>
+                console.log(
+                  "Help generate English description",
+                )
+              }
+            />
 
             {/* Custom Fields for English */}
             {customFields.map((field) => (
@@ -396,44 +388,37 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Abstract
-                  </label>
-                  <TextInputWithAI
-                    value={frenchAbstract}
-                    onChange={onFrenchAbstractChange}
-                    placeholder="Enter French abstract..."
-                    rows={3}
-                    showAiButton={showAiButtons}
-                    onAiGenerate={() => console.log("AI Generate French Abstract")}
-                    showHelpLink={showAiButtons}
-                    onHelpClick={() => console.log("Help generate French abstract")}
-                  />
-                </div>
+                <RichTextEditor
+                  label="Abstract"
+                  value={frenchAbstract}
+                  onChange={onFrenchAbstractChange}
+                  placeholder="Enter French abstract..."
+                  rows={3}
+                  showAiButton={showAiButtons}
+                  onAiGenerate={() => console.log("AI Generate French Abstract")}
+                  showHelpLink={showAiButtons}
+                  onHelpClick={() => console.log("Help generate French abstract")}
+                  aiHelpText="Help me generate or improve an abstract"
+                />
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <RichTextEditor
-                    value={frenchDescription}
-                    onChange={onFrenchDescriptionChange}
-                    placeholder="Enter French description..."
-                    showAiButton={showAiButtons}
-                    onAiGenerate={() =>
-                      console.log(
-                        "AI Generate French Description",
-                      )
-                    }
-                    showHelpLink={showAiButtons}
-                    onHelpClick={() =>
-                      console.log(
-                        "Help generate French description",
-                      )
-                    }
-                  />
-                </div>
+                <RichTextEditor
+                  label="Description"
+                  value={frenchDescription}
+                  onChange={onFrenchDescriptionChange}
+                  placeholder="Enter French description..."
+                  showAiButton={showAiButtons}
+                  onAiGenerate={() =>
+                    console.log(
+                      "AI Generate French Description",
+                    )
+                  }
+                  showHelpLink={showAiButtons}
+                  onHelpClick={() =>
+                    console.log(
+                      "Help generate French description",
+                    )
+                  }
+                />
 
                 {/* Custom Fields for French */}
                 {customFields.map((field) => (
@@ -512,44 +497,37 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Abstract
-                  </label>
-                  <TextInputWithAI
-                    value={germanAbstract}
-                    onChange={onGermanAbstractChange}
-                    placeholder="Enter German abstract..."
-                    rows={3}
-                    showAiButton={showAiButtons}
-                    onAiGenerate={() => console.log("AI Generate German Abstract")}
-                    showHelpLink={showAiButtons}
-                    onHelpClick={() => console.log("Help generate German abstract")}
-                  />
-                </div>
+                <RichTextEditor
+                  label="Abstract"
+                  value={germanAbstract}
+                  onChange={onGermanAbstractChange}
+                  placeholder="Enter German abstract..."
+                  rows={3}
+                  showAiButton={showAiButtons}
+                  onAiGenerate={() => console.log("AI Generate German Abstract")}
+                  showHelpLink={showAiButtons}
+                  onHelpClick={() => console.log("Help generate German abstract")}
+                  aiHelpText="Help me generate or improve an abstract"
+                />
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <RichTextEditor
-                    value={germanDescription}
-                    onChange={onGermanDescriptionChange}
-                    placeholder="Enter German description..."
-                    showAiButton={showAiButtons}
-                    onAiGenerate={() =>
-                      console.log(
-                        "AI Generate German Description",
-                      )
-                    }
-                    showHelpLink={showAiButtons}
-                    onHelpClick={() =>
-                      console.log(
-                        "Help generate German description",
-                      )
-                    }
-                  />
-                </div>
+                <RichTextEditor
+                  label="Description"
+                  value={germanDescription}
+                  onChange={onGermanDescriptionChange}
+                  placeholder="Enter German description..."
+                  showAiButton={showAiButtons}
+                  onAiGenerate={() =>
+                    console.log(
+                      "AI Generate German Description",
+                    )
+                  }
+                  showHelpLink={showAiButtons}
+                  onHelpClick={() =>
+                    console.log(
+                      "Help generate German description",
+                    )
+                  }
+                />
 
                 {/* Custom Fields for German */}
                 {customFields.map((field) => (
@@ -635,39 +613,35 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Description
-                    </label>
-                    <RichTextEditor
-                      value={
-                        otherLanguagesDescriptions[
-                          lang.id
-                        ] || ""
-                      }
-                      onChange={(value) =>
-                        onOtherLanguagesDescriptionsChange(
-                          {
-                            ...otherLanguagesDescriptions,
-                            [lang.id]: value,
-                          },
-                        )
-                      }
-                      placeholder={`Enter ${lang.name} description...`}
-                      showAiButton={showAiButtons}
-                      onAiGenerate={() =>
-                        console.log(
-                          `AI Generate ${lang.name} Description`,
-                        )
-                      }
-                      showHelpLink={showAiButtons}
-                      onHelpClick={() =>
-                        console.log(
-                          `Help generate ${lang.name} description`,
-                        )
-                      }
-                    />
-                  </div>
+                  <RichTextEditor
+                    label="Description"
+                    value={
+                      otherLanguagesDescriptions[
+                        lang.id
+                      ] || ""
+                    }
+                    onChange={(value) =>
+                      onOtherLanguagesDescriptionsChange(
+                        {
+                          ...otherLanguagesDescriptions,
+                          [lang.id]: value,
+                        },
+                      )
+                    }
+                    placeholder={`Enter ${lang.name} description...`}
+                    showAiButton={showAiButtons}
+                    onAiGenerate={() =>
+                      console.log(
+                        `AI Generate ${lang.name} Description`,
+                      )
+                    }
+                    showHelpLink={showAiButtons}
+                    onHelpClick={() =>
+                      console.log(
+                        `Help generate ${lang.name} description`,
+                      )
+                    }
+                  />
 
                   {/* Custom Fields for Additional Language */}
                   {customFields.map((field) => (
@@ -835,46 +809,42 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <RichTextEditor
-                  value={
-                    leftColumnLanguage === "french"
-                      ? frenchDescription
-                      : leftColumnLanguage === "english"
-                        ? englishDescription
-                        : leftColumnLanguage === "german"
-                          ? germanDescription
-                          : otherLanguagesDescriptions[leftColumnLanguage] || ""
+              <RichTextEditor
+                label="Description"
+                value={
+                  leftColumnLanguage === "french"
+                    ? frenchDescription
+                    : leftColumnLanguage === "english"
+                      ? englishDescription
+                      : leftColumnLanguage === "german"
+                        ? germanDescription
+                        : otherLanguagesDescriptions[leftColumnLanguage] || ""
+                }
+                onChange={(value) => {
+                  if (leftColumnLanguage === "french") onFrenchDescriptionChange(value);
+                  else if (leftColumnLanguage === "english") onEnglishDescriptionChange(value);
+                  else if (leftColumnLanguage === "german") onGermanDescriptionChange(value);
+                  else {
+                    onOtherLanguagesDescriptionsChange({
+                      ...otherLanguagesDescriptions,
+                      [leftColumnLanguage]: value
+                    });
                   }
-                  onChange={(value) => {
-                    if (leftColumnLanguage === "french") onFrenchDescriptionChange(value);
-                    else if (leftColumnLanguage === "english") onEnglishDescriptionChange(value);
-                    else if (leftColumnLanguage === "german") onGermanDescriptionChange(value);
-                    else {
-                      onOtherLanguagesDescriptionsChange({
-                        ...otherLanguagesDescriptions,
-                        [leftColumnLanguage]: value
-                      });
-                    }
-                  }}
-                  placeholder={leftColumnLanguage === "french" ? "" : `Enter ${leftColumnLanguage} description...`}
-                  showAiButton={showAiButtons}
-                  onAiGenerate={() =>
-                    console.log(
-                      `AI Generate ${leftColumnLanguage} Description`,
-                    )
-                  }
-                  showHelpLink={showAiButtons}
-                  onHelpClick={() =>
-                    console.log(
-                      `Help generate ${leftColumnLanguage} description`,
-                    )
-                  }
-                />
-              </div>
+                }}
+                placeholder={leftColumnLanguage === "french" ? "" : `Enter ${leftColumnLanguage} description...`}
+                showAiButton={showAiButtons}
+                onAiGenerate={() =>
+                  console.log(
+                    `AI Generate ${leftColumnLanguage} Description`,
+                  )
+                }
+                showHelpLink={showAiButtons}
+                onHelpClick={() =>
+                  console.log(
+                    `Help generate ${leftColumnLanguage} description`,
+                  )
+                }
+              />
 
               {/* Custom Fields for Left Column */}
               {customFields.map((field) => (
@@ -931,46 +901,42 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <RichTextEditor
-                  value={
-                    rightColumnLanguage === "french"
-                      ? frenchDescription
-                      : rightColumnLanguage === "english"
-                        ? englishDescription
-                        : rightColumnLanguage === "german"
-                          ? germanDescription
-                          : otherLanguagesDescriptions[rightColumnLanguage] || ""
+              <RichTextEditor
+                label="Description"
+                value={
+                  rightColumnLanguage === "french"
+                    ? frenchDescription
+                    : rightColumnLanguage === "english"
+                      ? englishDescription
+                      : rightColumnLanguage === "german"
+                        ? germanDescription
+                        : otherLanguagesDescriptions[rightColumnLanguage] || ""
+                }
+                onChange={(value) => {
+                  if (rightColumnLanguage === "french") onFrenchDescriptionChange(value);
+                  else if (rightColumnLanguage === "english") onEnglishDescriptionChange(value);
+                  else if (rightColumnLanguage === "german") onGermanDescriptionChange(value);
+                  else {
+                    onOtherLanguagesDescriptionsChange({
+                      ...otherLanguagesDescriptions,
+                      [rightColumnLanguage]: value
+                    });
                   }
-                  onChange={(value) => {
-                    if (rightColumnLanguage === "french") onFrenchDescriptionChange(value);
-                    else if (rightColumnLanguage === "english") onEnglishDescriptionChange(value);
-                    else if (rightColumnLanguage === "german") onGermanDescriptionChange(value);
-                    else {
-                      onOtherLanguagesDescriptionsChange({
-                        ...otherLanguagesDescriptions,
-                        [rightColumnLanguage]: value
-                      });
-                    }
-                  }}
-                  placeholder={rightColumnLanguage === "french" ? "" : `Enter ${rightColumnLanguage} description...`}
-                  showAiButton={showAiButtons}
-                  onAiGenerate={() =>
-                    console.log(
-                      `AI Generate ${rightColumnLanguage} Description`,
-                    )
-                  }
-                  showHelpLink={showAiButtons}
-                  onHelpClick={() =>
-                    console.log(
-                      `Help generate ${rightColumnLanguage} description`,
-                    )
-                  }
-                />
-              </div>
+                }}
+                placeholder={rightColumnLanguage === "french" ? "" : `Enter ${rightColumnLanguage} description...`}
+                showAiButton={showAiButtons}
+                onAiGenerate={() =>
+                  console.log(
+                    `AI Generate ${rightColumnLanguage} Description`,
+                  )
+                }
+                showHelpLink={showAiButtons}
+                onHelpClick={() =>
+                  console.log(
+                    `Help generate ${rightColumnLanguage} description`,
+                  )
+                }
+              />
 
               {/* Custom Fields for Right Column */}
               {customFields.map((field) => (

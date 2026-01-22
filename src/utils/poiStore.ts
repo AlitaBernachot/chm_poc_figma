@@ -8,6 +8,7 @@ export interface POI {
   name: string;
   url?: string;
   abstract?: string;
+  description?: string;
   status: "draft" | "published";
   hasLocation: boolean;
   lastUpdated?: string;
@@ -131,6 +132,7 @@ function transformPOIData(rawData: unknown): POI[] {
         name,
         url,
         abstract: poiData.abstract || '',
+        description: poiData.description || '',
         status: 'published' as const,
         hasLocation,
         lastUpdated: new Date().toISOString().split('T')[0],

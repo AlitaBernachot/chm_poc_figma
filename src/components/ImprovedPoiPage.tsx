@@ -465,6 +465,11 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
           setGermanAbstract(currentPoi.abstract);
           setEnglishAbstract(currentPoi.abstract);
         }
+        
+        // Load description for main language
+        if (currentPoi.description) {
+          setEnglishDescription(currentPoi.description);
+        }
       }
       // Don't clear the title if POI exists but name is empty - keep existing title
     } else if (selectedPOI === 'new') {

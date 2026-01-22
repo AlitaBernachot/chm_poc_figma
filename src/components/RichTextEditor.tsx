@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Bold, Italic, List, ListOrdered, Link as LinkIcon, Sparkles, Check, RotateCcw, Eye, Code } from 'lucide-react';
 
 interface RichTextEditorProps {
+  label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -9,9 +10,24 @@ interface RichTextEditorProps {
   onAiGenerate?: () => void;
   showHelpLink?: boolean;
   onHelpClick?: () => void;
+  aiHelpText?: string;
+  rows?: number;
+  simpleMode?: boolean;
 }
 
-export function RichTextEditor({ value, onChange, placeholder, showAiButton = false, onAiGenerate, showHelpLink = false, onHelpClick }: RichTextEditorProps) {
+export function RichTextEditor({ 
+  label,
+  value, 
+  onChange, 
+  placeholder, 
+  showAiButton = false, 
+  onAiGenerate, 
+  showHelpLink = false, 
+  onHelpClick,
+  aiHelpText = 'Help me generate or improve a description',
+  rows = 3,
+  simpleMode = false
+}: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
   const isInternalUpdate = useRef(false);
@@ -214,148 +230,323 @@ export function RichTextEditor({ value, onChange, placeholder, showAiButton = fa
 
   const isEmpty = !value || value.trim() === '' || value === '<br>';
 
-  return (
-    <div className="border border-gray-300 rounded bg-white">
-      {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
-        <button
-          type="button"
-          onClick={() => execCommand('bold')}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Bold"
-        >
-          <Bold className="w-4 h-4 text-gray-700" />
-        </button>
-        <button
-          type="button"
-          onClick={() => execCommand('italic')}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Italic"
-        >
-          <Italic className="w-4 h-4 text-gray-700" />
-        </button>
-        <div className="w-px h-6 bg-gray-300 mx-1" />
-        <button
-          type="button"
-          onClick={() => execCommand('insertUnorderedList')}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Bullet List"
-        >
-          <List className="w-4 h-4 text-gray-700" />
-        </button>
-        <button
-          type="button"
-          onClick={() => execCommand('insertOrderedList')}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Numbered List"
-        >
-          <ListOrdered className="w-4 h-4 text-gray-700" />
-        </button>
-        <div className="w-px h-6 bg-gray-300 mx-1" />
-        <button
-          type="button"
-          onClick={insertLink}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Insert Link"
-        >
-          <LinkIcon className="w-4 h-4 text-gray-700" />
-        </button>
-        <div className="w-px h-6 bg-gray-300 mx-1" />
-        <button
-          type="button"
-          onClick={() => setViewMode(viewMode === 'preview' ? 'code' : 'preview')}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
-          title="Toggle View Mode"
-        >
-          {viewMode === 'preview' ? <Code className="w-4 h-4 text-gray-700" /> : <Eye className="w-4 h-4 text-gray-700" />}
-        </button>
-      </div>
+  // For simple mode, render a simple textarea instead of rich text editor
+  if (simpleMode) {
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const capturedSelectionRef = useRef<{ start: number; end: number; text: string } | null>(null);
 
-      {/* Editor with Help Link */}
-      <div className="relative">
-        {viewMode === 'preview' && (
-          <div
-            ref={editorRef}
-            contentEditable
-            onInput={handleInput}
-            className="px-4 pt-3 pb-14 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-            data-placeholder={placeholder}
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word'
-            }}
-          />
-        )}
-        {viewMode === 'code' && (
+    useEffect(() => {
+      if (!textareaRef.current) return;
+
+      const handleSelectionChange = () => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const hasText = start !== end;
+        
+        setHasSelection(hasText);
+        
+        // Store selection in ref
+        if (hasText) {
+          capturedSelectionRef.current = {
+            start,
+            end,
+            text: textarea.value.substring(start, end)
+          };
+        }
+      };
+
+      const textarea = textareaRef.current;
+      textarea.addEventListener('mouseup', handleSelectionChange);
+      textarea.addEventListener('keyup', handleSelectionChange);
+      
+      return () => {
+        textarea.removeEventListener('mouseup', handleSelectionChange);
+        textarea.removeEventListener('keyup', handleSelectionChange);
+      };
+    }, []);
+
+    const handleSimpleHelpClick = () => {
+      const currentValue = value;
+      setOriginalValue(currentValue);
+      
+      const capturedSelectedText = capturedSelectionRef.current?.text || '';
+      
+      setIsThinking(true);
+      
+      if (onHelpClick) {
+        onHelpClick();
+      }
+      
+      setTimeout(() => {
+        const mockGeneratedText = 'Lorem ipsum generated by AI.';
+        let newValue = '';
+        
+        if (capturedSelectedText) {
+          newValue = currentValue.replace(capturedSelectedText, mockGeneratedText);
+        } else {
+          newValue = mockGeneratedText;
+        }
+        
+        onChange(newValue);
+        
+        setIsThinking(false);
+        setShowActions(true);
+        setHasSelection(false);
+        capturedSelectionRef.current = null;
+      }, 1000);
+    };
+
+    const handleSimpleValidate = () => {
+      setShowActions(false);
+      setOriginalValue('');
+      setHasSelection(false);
+    };
+
+    const handleSimpleRevert = () => {
+      onChange(originalValue);
+      setShowActions(false);
+      setOriginalValue('');
+      setHasSelection(false);
+    };
+
+    return (
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <div className="relative">
           <textarea
-            ref={codeEditorRef}
-            onInput={handleCodeInput}
-            className="w-full px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset font-mono text-sm"
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
             placeholder={placeholder}
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word',
-              resize: 'vertical'
-            }}
+            rows={rows}
           />
-        )}
-        {showHelpLink && onHelpClick && !isThinking && !showActions && (
-          <button
-            type="button"
-            onClick={handleHelpClick}
-            className="hover:cursor-pointer absolute left-4 bottom-3 transition-opacity hover:opacity-80 flex items-center gap-1.5 text-sm underline"
-            style={{ 
-              pointerEvents: 'auto',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            <Sparkles className="w-3.5 h-3.5 " style={{ color: '#8b5cf6' }} />
-            {hasSelection ? 'Improve the text selection' : 'Help me generate or improve a description'}
-          </button>
-        )}
-        {isThinking && (
-          <div className="absolute left-4 bottom-3 flex items-center gap-1.5 text-sm">
-            <Sparkles 
-              className="w-3.5 h-3.5 animate-spin" 
-              style={{ color: '#8b5cf6' }} 
-            />
-            <span
-              style={{ 
+          
+          {showHelpLink && !isThinking && !showActions && (
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                if (textareaRef.current) {
+                  const start = textareaRef.current.selectionStart;
+                  const end = textareaRef.current.selectionEnd;
+                  if (start !== end) {
+                    capturedSelectionRef.current = {
+                      start,
+                      end,
+                      text: textareaRef.current.value.substring(start, end)
+                    };
+                  } else {
+                    capturedSelectionRef.current = null;
+                  }
+                }
+              }}
+              onClick={handleSimpleHelpClick}
+              className="absolute left-4 bottom-3 text-sm flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+              style={{
                 background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }}
             >
-              Thinking...
-            </span>
-          </div>
-        )}
-        {showActions && (
-          <div className="absolute left-4 bottom-3 flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5" style={{ color: '#8b5cf6' }} />
+              {hasSelection ? 'Improve the text selection' : aiHelpText}
+            </button>
+          )}
+
+          {isThinking && (
+            <div className="absolute left-4 bottom-3 flex items-center gap-1.5 text-sm">
+              <Sparkles 
+                className="w-3.5 h-3.5 animate-spin" 
+                style={{ color: '#8b5cf6' }} 
+              />
+              <span
+                style={{ 
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              >
+                Thinking...
+              </span>
+            </div>
+          )}
+
+          {showActions && (
+            <div className="absolute left-4 bottom-3 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSimpleValidate}
+                className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
+              >
+                <Check className="w-3.5 h-3.5" />
+                Validate
+              </button>
+              <button
+                type="button"
+                onClick={handleSimpleRevert}
+                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Revert
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <div className="border border-gray-300 rounded bg-white">
+        {/* Toolbar */}
+        <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
+          <button
+            type="button"
+            onClick={() => execCommand('bold')}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Bold"
+          >
+            <Bold className="w-4 h-4 text-gray-700" />
+          </button>
+          <button
+            type="button"
+            onClick={() => execCommand('italic')}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Italic"
+          >
+            <Italic className="w-4 h-4 text-gray-700" />
+          </button>
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <button
+            type="button"
+            onClick={() => execCommand('insertUnorderedList')}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Bullet List"
+          >
+            <List className="w-4 h-4 text-gray-700" />
+          </button>
+          <button
+            type="button"
+            onClick={() => execCommand('insertOrderedList')}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Numbered List"
+          >
+            <ListOrdered className="w-4 h-4 text-gray-700" />
+          </button>
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <button
+            type="button"
+            onClick={insertLink}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Insert Link"
+          >
+            <LinkIcon className="w-4 h-4 text-gray-700" />
+          </button>
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <button
+            type="button"
+            onClick={() => setViewMode(viewMode === 'preview' ? 'code' : 'preview')}
+            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            title="Toggle View Mode"
+          >
+            {viewMode === 'preview' ? <Code className="w-4 h-4 text-gray-700" /> : <Eye className="w-4 h-4 text-gray-700" />}
+          </button>
+        </div>
+
+        {/* Editor with Help Link */}
+        <div className="relative">
+          {viewMode === 'preview' && (
+            <div
+              ref={editorRef}
+              contentEditable
+              onInput={handleInput}
+              className="px-4 pt-3 pb-14 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+              data-placeholder={placeholder}
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word'
+              }}
+            />
+          )}
+          {viewMode === 'code' && (
+            <textarea
+              ref={codeEditorRef}
+              onInput={handleCodeInput}
+              className="w-full px-4 py-3 min-h-[120px] outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset font-mono text-sm"
+              placeholder={placeholder}
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                resize: 'vertical'
+              }}
+            />
+          )}
+          {showHelpLink && onHelpClick && !isThinking && !showActions && (
             <button
               type="button"
-              onClick={handleValidate}
-              className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
-              title="Validate"
+              onClick={handleHelpClick}
+              className="hover:cursor-pointer absolute left-4 bottom-3 transition-opacity hover:opacity-80 flex items-center gap-1.5 text-sm underline"
+              style={{ 
+                pointerEvents: 'auto',
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
             >
-              <Check className="w-3.5 h-3.5" />
-              Validate
+              <Sparkles className="w-3.5 h-3.5 " style={{ color: '#8b5cf6' }} />
+              {hasSelection ? 'Improve the text selection' : aiHelpText}
             </button>
-            <button
-              type="button"
-              onClick={handleRevert}
-              className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
-              title="Revert"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Revert
-            </button>
-          </div>
-        )}
+          )}
+          {isThinking && (
+            <div className="absolute left-4 bottom-3 flex items-center gap-1.5 text-sm">
+              <Sparkles 
+                className="w-3.5 h-3.5 animate-spin" 
+                style={{ color: '#8b5cf6' }} 
+              />
+              <span
+                style={{ 
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              >
+                Thinking...
+              </span>
+            </div>
+          )}
+          {showActions && (
+            <div className="absolute left-4 bottom-3 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleValidate}
+                className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
+                title="Validate"
+              >
+                <Check className="w-3.5 h-3.5" />
+                Validate
+              </button>
+              <button
+                type="button"
+                onClick={handleRevert}
+                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors flex items-center gap-1.5 text-sm"
+                title="Revert"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Revert
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
