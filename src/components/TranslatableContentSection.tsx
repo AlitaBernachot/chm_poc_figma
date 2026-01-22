@@ -51,30 +51,38 @@ interface TranslatableContentSectionProps {
 
   // French 
   frenchTitle: string;
+  frenchAbstract: string;
   frenchDescription: string;
   onFrenchTitleChange: (value: string) => void;
+  onFrenchAbstractChange: (value: string) => void;
   onFrenchDescriptionChange: (value: string) => void;
 
   // English Translation (Main Language)
   isEnglishExpanded: boolean;
   englishTitle: string;
+  englishAbstract: string;
   englishDescription: string;
   onOpenLanguage: (language: "english" | "german" | number) => void;
   onEnglishTitleChange: (value: string) => void;
+  onEnglishAbstractChange: (value: string) => void;
   onEnglishDescriptionChange: (value: string) => void;
 
   // German Translation
   isGermanExpanded: boolean;
   germanTitle: string;
+  germanAbstract: string;
   germanDescription: string;
   onGermanTitleChange: (value: string) => void;
+  onGermanAbstractChange: (value: string) => void;
   onGermanDescriptionChange: (value: string) => void;
 
   // Additional Languages
   additionalLanguages: AdditionalLanguage[];
   otherLanguagesTitles: Record<string, string>;
+  otherLanguagesAbstracts: Record<string, string>;
   otherLanguagesDescriptions: Record<string, string>;
   onOtherLanguagesTitlesChange: (titles: Record<string, string>) => void;
+  onOtherLanguagesAbstractsChange: (abstracts: Record<string, string>) => void;
   onOtherLanguagesDescriptionsChange: (descriptions: Record<string, string>) => void;
 
   // Add Language
@@ -107,25 +115,33 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
   onUpdateCustomFieldLabel,
   onEditingCustomFieldIdChange,
   frenchTitle,
+  frenchAbstract,
   frenchDescription,
   onFrenchTitleChange,
+  onFrenchAbstractChange,
   onFrenchDescriptionChange,
   isFrenchExpanded,
   isEnglishExpanded,
   englishTitle,
+  englishAbstract,
   englishDescription,
   onOpenLanguage,
   onEnglishTitleChange,
+  onEnglishAbstractChange,
   onEnglishDescriptionChange,
   isGermanExpanded,
   germanTitle,
+  germanAbstract,
   germanDescription,
   onGermanTitleChange,
+  onGermanAbstractChange,
   onGermanDescriptionChange,
   additionalLanguages,
   otherLanguagesTitles,
+  otherLanguagesAbstracts,
   otherLanguagesDescriptions,
   onOtherLanguagesTitlesChange,
+  onOtherLanguagesAbstractsChange,
   onOtherLanguagesDescriptionsChange,
   availableLanguages,
   isAddLanguageDropdownOpen,
@@ -258,6 +274,19 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Abstract
+              </label>
+              <textarea
+                value={englishAbstract}
+                onChange={(e) => onEnglishAbstractChange(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                placeholder="Enter English abstract..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Description
               </label>
               <RichTextEditor
@@ -365,6 +394,19 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Abstract
+                  </label>
+                  <textarea
+                    value={frenchAbstract}
+                    onChange={(e) => onFrenchAbstractChange(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                    placeholder="Enter French abstract..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Description
                   </label>
                   <RichTextEditor
@@ -460,6 +502,19 @@ export const TranslatableContentSection: React.FC<TranslatableContentSectionProp
                     onChange={(e) => onGermanTitleChange(e.target.value)}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     placeholder="Enter German title..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Abstract
+                  </label>
+                  <textarea
+                    value={germanAbstract}
+                    onChange={(e) => onGermanAbstractChange(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                    placeholder="Enter German abstract..."
+                    rows={3}
                   />
                 </div>
 

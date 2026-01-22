@@ -459,6 +459,12 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
         setPoiAddressStreet(currentPoi.addressStreet || "");
         setPoiAddressUrl(currentPoi.addressUrl || "");
         setPoiAddressZip(currentPoi.addressZip || "");
+        
+        // Load abstract for main languages
+        if (currentPoi.abstract) {
+          setGermanAbstract(currentPoi.abstract);
+          setEnglishAbstract(currentPoi.abstract);
+        }
       }
       // Don't clear the title if POI exists but name is empty - keep existing title
     } else if (selectedPOI === 'new') {
@@ -466,6 +472,9 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
       setEnglishTitle("");
       setPhotos([]);
       setNextPhotoId(1);
+      setGermanAbstract("");
+      setEnglishAbstract("");
+      setFrenchAbstract("");
       setPoiAddressCity("");
       setPoiAddressEmail("");
       setPoiAddressName("");
@@ -496,17 +505,24 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
   const [aiSuggestedRemoveTags, setAiSuggestedRemoveTags] = useState<string[]>([]);
   const [showValidateButton, setShowValidateButton] = useState(false);
   const [frenchTitle, setFrenchTitle] = useState("");
+  const [frenchAbstract, setFrenchAbstract] = useState("");
   const [frenchDescription, setFrenchDescription] =
     useState("");
   const [englishTitle, setEnglishTitle] = useState("");
+  const [englishAbstract, setEnglishAbstract] = useState("");
   const [englishDescription, setEnglishDescription] =
     useState("");
   const [germanTitle, setGermanTitle] = useState("");
+  const [germanAbstract, setGermanAbstract] = useState("");
   const [germanDescription, setGermanDescription] =
     useState("");
   const [
     otherLanguagesTitles,
     setOtherLanguagesTitles,
+  ] = useState<Record<string, string>>({});
+  const [
+    otherLanguagesAbstracts,
+    setOtherLanguagesAbstracts,
   ] = useState<Record<string, string>>({});
   const [
     otherLanguagesDescriptions,
@@ -1753,24 +1769,32 @@ export default function ImprovedPoiPage({ showAiButtons, onToggleAiButtons, onMa
                 onEditingCustomFieldIdChange={setEditingCustomFieldId}
                 isFrenchExpanded={isFrenchExpanded}
                 frenchTitle={frenchTitle}
+                frenchAbstract={frenchAbstract}
                 frenchDescription={frenchDescription}
                 onFrenchTitleChange={setFrenchTitle}
+                onFrenchAbstractChange={setFrenchAbstract}
                 onFrenchDescriptionChange={setFrenchDescription}
                 isEnglishExpanded={isEnglishExpanded}
                 englishTitle={englishTitle}
+                englishAbstract={englishAbstract}
                 englishDescription={englishDescription}
                 onOpenLanguage={openLanguage}
                 onEnglishTitleChange={setEnglishTitle}
+                onEnglishAbstractChange={setEnglishAbstract}
                 onEnglishDescriptionChange={setEnglishDescription}
                 isGermanExpanded={isGermanExpanded}
                 germanTitle={germanTitle}
+                germanAbstract={germanAbstract}
                 germanDescription={germanDescription}
                 onGermanTitleChange={setGermanTitle}
+                onGermanAbstractChange={setGermanAbstract}
                 onGermanDescriptionChange={setGermanDescription}
                 additionalLanguages={additionalLanguages}
                 otherLanguagesTitles={otherLanguagesTitles}
+                otherLanguagesAbstracts={otherLanguagesAbstracts}
                 otherLanguagesDescriptions={otherLanguagesDescriptions}
                 onOtherLanguagesTitlesChange={setOtherLanguagesTitles}
+                onOtherLanguagesAbstractsChange={setOtherLanguagesAbstracts}
                 onOtherLanguagesDescriptionsChange={setOtherLanguagesDescriptions}
                 availableLanguages={availableLanguages}
                 isAddLanguageDropdownOpen={isAddLanguageDropdownOpen}
